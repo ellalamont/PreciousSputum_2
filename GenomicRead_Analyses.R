@@ -56,12 +56,8 @@ N_Genomic_Fig1
 # ggsave(N_Genomic_Fig1,
 #        file = paste0("Run2_N_Genomic_Fig1.pdf"),
 #        path = "Figures/GenomicRead_Analyses",
-#        width = 8, height = 5, units = "in")
+#        width = 5, height = 5, units = "in")
 
-
-
-###########################################################
-################ P_Genomic vs SAMPLE TYPE #################
 
 P_Genomic_Fig1 <- Run2_pipeSummary %>% 
   filter(Type != "NA") %>%
@@ -78,7 +74,7 @@ P_Genomic_Fig1
 # ggsave(P_Genomic_Fig1,
 #        file = paste0("Run2_P_Genomic_Fig1.pdf"),
 #        path = "Figures/GenomicRead_Analyses",
-#        width = 8, height = 5, units = "in")
+#        width = 5, height = 5, units = "in")
 
 
 TenReads_Fig1 <- Run2_pipeSummary %>% 
@@ -86,12 +82,12 @@ TenReads_Fig1 <- Run2_pipeSummary %>%
   mutate(Txn_Coverage = (AtLeast.10.Reads/4499)*100) %>%
   ggplot(aes(x = Type, y = Txn_Coverage)) + 
   geom_boxplot(fill="grey", width = 0.6, outlier.size = 0.9, alpha = 0.2) + 
-  geom_point(aes(fill = Type), shape = 21, alpha = 0.8, size = 1.7, position = position_jitter(0.2)) + 
+  geom_point(aes(fill = Outcome), shape = 21, alpha = 0.8, size = 1.7, position = position_jitter(0.2)) + 
   geom_hline(yintercept = 80, linetype = "dashed", alpha = 0.5) + 
   geom_hline(yintercept = 50, linetype = "dashed", alpha = 0.5) + 
   labs(title = "PredictTB Run 2: Genes with >= 10 reads aligning for all sample types",
        x = "Sample type", 
-       y = "# of genes with at least 10 reads aligning") + 
+       y = "% Transcriptional coverage") + 
   scale_y_continuous(limits = c(0,100), breaks = seq(0, 100, 10)) + 
   # scale_x_continuous(trans = "log10") + 
   my_plot_themes
@@ -99,12 +95,26 @@ TenReads_Fig1
 # ggsave(TenReads_Fig1,
 #        file = paste0("Run2_TenReads_Fig1.pdf"),
 #        path = "Figures/GenomicRead_Analyses",
-#        width = 8, height = 5, units = "in")
+#        width = 5, height = 5, units = "in")
 
+### See how many Run2 samples pass my filters ###
+Run2_pipeSummary %>% 
+  filter(Week == "Week 0") %>% 
+  # filter(N_Genomic >= 1000000) %>% 
+  nrow()
 
+Run2_pipeSummary %>% 
+  filter(Week == "Week 0") %>% 
+  filter(N_Genomic >= 1000000) %>% 
+  filter(AtLeast.10.Reads >= 4499*0.8) %>% 
+  nrow()
 
+Run2_pipeSummary %>% 
+  filter(Week == "Week 0") %>% 
+  filter(AtLeast.10.Reads >= 4499*0.8) %>% 
+  nrow()
 
-
-
-
-
+Run2_pipeSummary %>% 
+  filter(Week == "Week 2") %>% 
+  filter(AtLeast.10.Reads >= 4499*0.8) %>% 
+  nrow()
