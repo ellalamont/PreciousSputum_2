@@ -41,7 +41,7 @@ library(DuffyTools)
 # cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 # cbPalette2 <-  c("#bfbfbf", "#56B4E9")
 # cbPalette3 <-  c("#bfbfbf", "#E69F00")
-# cbPalette4 <- c("#56B4E9", "#009E73", "#F0E442","#CC79A7")
+cbPalette4 <- c("#56B4E9", "#009E73", "#F0E442","#CC79A7")
 # c25 <- c(
 #   "dodgerblue2", "#E31A1C", "green4",
 #   "#6A3D9A","#FF7F00","black", "gold1",
@@ -92,13 +92,16 @@ All_pipeSummary <- All_pipeSummary %>% mutate(Type = coalesce(Type, Sample_Type)
   select(-c(N_Splice, P_Splice, Replicate, RT, CFU_per_g, CFU_per_mL, Ra_cells, EukrRNADep, Hyb_Time, Probe, Probe_ng, Pooled_Set, X)) %>%
   filter(SampleID != "Undetermined_S0")
 
+# Remove _S* From names
+# All_pipeSummary$SampleID <- gsub(x = All_pipeSummary$SampleID, pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
+
 
 # Reorder things
 # NOT DONE YET!
 # All_pipeSummary$Drug <- as.character(All_pipeSummary$Drug)
 # ordered_Drug <- c("Untreated", "RIF")
 # All_pipeSummary$Drug <- factor(All_pipeSummary$Drug, levels = ordered_Drug)
-# All_pipeSummary$SampleID <- gsub(x = All_pipeSummary$SampleID, pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
+
 
 
 ###########################################################
@@ -116,26 +119,19 @@ BrothSampleList <- All_pipeSummary %>%
 
 
 
-# 9/18/25 BELOW IS NOT DONE YET!!!!
-
 ###########################################################
 ############### IMPORT AND PROCESS TPM VALUES #############
 
 Run1_tpm <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.TPM.csv")
-Run1_tpm <- Run1_tpm %>% select(-contains("TBAIT"))
+Run1_tpm <- Run1_tpm %>% select(X, THP1_1e6_1_S67, contains("W"))
 
 # Just pull the tpm of the THP1 spiked from another run: THP1 1e6_1 (Predict rack 2 box 1 I04)
 # Need THP1 1e6_1a from the Januaray run. Also need 
 ProbeTest5_tpm <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.TPM_moreTrim.csv") 
-ProbeTest5_tpm_subset <- ProbeTest5_tpm %>% select(X, THP1_1e6_1a_S28)
-ProbeTest5_tpm_Broth <- ProbeTest5_tpm %>% select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9)
+ProbeTest5_tpm_Broth <- ProbeTest5_tpm %>% select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9, THP1_1e6_1a_S28)
 
-# Get the Marmoset TPM
-ProbeTest3_tpm <- read.csv("Data/ProbeTest3/ProbeTest3_Mtb.Expression.Gene.Data.TPM.csv")
-ProbeTest3_tpm_marm <- ProbeTest3_tpm %>% select(X, BQ12_10_Probe_3A_S29, BQ12_3_Probe_4A_50_S27, BQ12_8_Probe_4A_50_S28)
-
-
-
+Run2_tpm <- read.csv("Data/PredictTB_Run2/Mtb.Expression.Gene.Data.TPM.csv")
+Run2_tpm <- Run2_tpm %>% select(-contains("Undetermined"))
 
 # Adjust the names so they are slightly shorter
 # names(All_tpm) <- gsub(x = names(All_tpm), pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
@@ -148,55 +144,47 @@ ProbeTest3_tpm_marm <- ProbeTest3_tpm %>% select(X, BQ12_10_Probe_3A_S29, BQ12_3
 
 
 ###########################################################
-###### MAKE TPM WITH ALL CLINICAL AND ANIMAL MODELS #######
-
-# Merge the tpms I collected above
-All_tpm <- merge(Run1_tpm, ProbeTest3_tpm_marm, all = T)
-All_tpm <- merge(All_tpm, ProbeTest5_tpm_Broth)
-
-# Just keep the samples passing filter
-All_tpm <- All_tpm %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
-
-
-
-###########################################################
 ############### IMPORT AND PROCESS RAW READS ##############
 
 Run1_RawReads <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.readsM.csv")
-Run1_RawReads <- Run1_RawReads %>% select(-contains("TBAIT"))
+Run1_RawReads <- Run1_RawReads %>% 
+  select(X, THP1_1e6_1_S67, contains("W")) %>%
+  rename_with(~ paste0("Run1_", .), -X) # Add Run1 to the beginning of every column because some have the same name
 
-ProbeTest5_RawReads <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.readsM_moreTrim.csv") 
-ProbeTest5_RawReads_Broth <- ProbeTest5_RawReads %>% select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9)
+ProbeTest5_RawReads <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.readsM_moreTrim.csv")
+ProbeTest5_RawReads_Broth <- ProbeTest5_RawReads %>% 
+  select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9, THP1_1e6_1a_S28) %>%
+  rename_with(~ paste0("ProbeTest5_", .), -X) 
 
-ProbeTest3_RawReads <- read.csv("Data/ProbeTest3/Mtb.Expression.Gene.Data.readsM_old.csv")
-ProbeTest3_RawReads_marm <- ProbeTest3_RawReads %>% select(X, BQ12_10_Probe_3A_S29, BQ12_3_Probe_4A_50_S27, BQ12_8_Probe_4A_50_S28)
+Run2_RawReads <- read.csv("Data/PredictTB_Run2/Mtb.Expression.Gene.Data.readsM.csv")
+Run2_RawReads <- Run2_RawReads %>% 
+  select(-contains("Undetermined")) %>% 
+  rename_with(~ paste0("Run2", .), -X) 
+  
+
 
 # Merge the RawReads I collected above
-All_RawReads <- merge(Run1_RawReads, ProbeTest3_RawReads_marm, all = T)
+All_RawReads <- merge(Run1_RawReads, Run2_RawReads, all = T)
 All_RawReads <- merge(All_RawReads, ProbeTest5_RawReads_Broth)
 
-# Just keep the samples passing filter
-All_RawReads <- All_RawReads %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
-
-
-
+# # Just keep the samples passing filter
+# All_RawReads <- All_RawReads %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
+# 
+# 
+# 
 ###########################################################
-################ NEW DATA WITH FEWER SPUTUM ###############
+################ MAKE TPM FROM Rv RAW READS ###############
 
-# Don't want to include all the sputum in the paper, want a random subset of ~12
+# Bob's TPM includes all the non-coding RNAs, make a new TPM from just the protein-coding genes
 
-# First remove all the relapse, then randomly choose
-sputumOnly_pipeSummary <- All_pipeSummary %>% filter(str_detect(Type, "sputum"))
-W0CureSputumOnly_pipeSummary <- sputumOnly_pipeSummary %>% filter(Outcome == "Cure" & Week == "Week 0")
+# Keep only the protein coding Rv genes
+All_RawReads_f <- All_RawReads %>%
+  filter(grepl("^Rv[0-9]+[A-Za-z]?$", X))
 
-# Randomly choose 12 sputum samples
-set.seed(5) # 3, 9
-SputumSubset_pipeSummary <- slice_sample(sputumOnly_pipeSummary, n = 12)
-SputumSubset_list <- SputumSubset_pipeSummary %>% pull(SampleID)
+source("Function_CalculateTPM.R")
+All_tpm_f <- CalculateTPM_RvOnly(All_RawReads_f)
 
-
-
-
+identical(All_tpm_f, All_tpm)
 
 
 
