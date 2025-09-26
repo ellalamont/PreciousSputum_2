@@ -24,7 +24,7 @@ my_plot_themes <- theme_bw() +
 
 
 ###########################################################
-################ COLLECT DATA OF INTEREST #################
+############# TPM: COLLECT DATA OF INTEREST ###############
 
 # Collecting all the duplicates between the two runs
 Run1_Subset <- Run1_tpm %>% select(X, THP1_1e6_1_S67, W0_12043_S32, W0_12082_S45, W0_13094_S46, W0_14136_S52, W0_15072_S48, W0_15083_S50) %>%
@@ -44,26 +44,39 @@ merged_DoubleRun_Log10_filtered <- merged_DoubleRun_Log10 %>%
   filter(grepl("^Rv[0-9]+[A-Za-z]?$", Gene))
 
 ###########################################################
-############# GGCORRPLOT OF THP1 1e6 SPIKED ###############
+############ TPM_F: COLLECT DATA OF INTEREST ##############
+
+# Genes have been filtered to keep only protein coding Rv genes and then TPM done manually (not Bob's pipeline)
+
+# Log10 transform the data
+All_tpmf_Log10 <- All_tpm_f %>% 
+  mutate(across(where(is.numeric), ~ .x + 1)) %>% # Add 1 to all the values
+  mutate(across(where(is.numeric), ~ log10(.x))) # Log transform the values
+
+# Make Gene a column
+All_tpmf_Log10 <- All_tpmf_Log10 %>% rownames_to_column("Gene")
+
+###########################################################
+################# TPM_F THP1 1e6 SPIKED ###################
 
 # Using all the genes
-Sample1 <- "Run1_THP1.Ra1e6" # Run1
-Sample2 <- "Run2_THP1.Ra1e6" # Run2
-ScatterCorr <- merged_DoubleRun_Log10 %>% 
+Sample1 <- "Run1_THP1_1e6_1" # Run1
+Sample2 <- "Run2_THP1_1e6_1" # Run2
+ScatterCorr <- All_tpmf_Log10 %>% 
   ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
   geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
   geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
   # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
   geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
   labs(title = paste0("THP1 spiked with 1e6 on two separate runs (different mRNA+LibraryPrep)"),
-       subtitle = "Pearson correlation",
+       subtitle = "tpm_f, Pearson correlation",
        x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
   stat_cor(method="pearson") + # add a correlation to the plot
   # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
   # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
   my_plot_themes
 ScatterCorr
-ggplotly(ScatterCorr)
+# ggplotly(ScatterCorr)
 # ggsave(ScatterCorr,
 #        file = paste0("THP1Spiked1e6_CompareRuns_AllGenes.pdf"),
 #        path = "Figures/Correlations_RunCompare",
@@ -72,18 +85,18 @@ ggplotly(ScatterCorr)
 
 
 ###########################################################
-######################## W0_12043 #########################
+##################### TPM_F W0_12043 ######################
 
 Sample1 <- "Run1_W0_12043" # Run1
 Sample2 <- "Run2_W0_12043" # Run2
-ScatterCorr <- merged_DoubleRun_Log10 %>% 
+ScatterCorr <- All_tpmf_Log10 %>% 
   ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
   geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
   geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
   # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
   geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
   labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
-       subtitle = "Pearson correlation",
+       subtitle = "tpm_f, Pearson correlation",
        x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
   stat_cor(method="pearson") + # add a correlation to the plot
   # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
@@ -91,40 +104,21 @@ ScatterCorr <- merged_DoubleRun_Log10 %>%
   my_plot_themes
 ScatterCorr
 
-# With just the Rv genes
-Sample1 <- "Run1_W0_12043" # Run1
-Sample2 <- "Run2_W0_12043" # Run2
-ScatterCorr_f <- merged_DoubleRun_Log10_filtered %>% 
-  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
-  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
-  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
-  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
-  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
-  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
-       subtitle = "Only coding Rv genes shown, Pearson correlation",
-       x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
-  stat_cor(method="pearson") + # add a correlation to the plot
-  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
-  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
-  my_plot_themes
-ScatterCorr_f
-ggplotly(ScatterCorr_f)
-
 
 ###########################################################
-######################## W0_14136 #########################
+##################### TPM_F W0_14136 ######################
 
 Sample1 <- "Run1_W0_14136" # Run1
 Sample2 <- "Run2_W0_14136" # Run2
 
-ScatterCorr <- merged_DoubleRun_Log10 %>% 
+ScatterCorr <- All_tpmf_Log10 %>% 
   ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
   geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
   geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
   # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
   geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
   labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
-       subtitle = "Pearson correlation",
+       subtitle = "tpm_f; Pearson correlation",
        x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
   stat_cor(method="pearson") + # add a correlation to the plot
   # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
@@ -132,20 +126,80 @@ ScatterCorr <- merged_DoubleRun_Log10 %>%
   my_plot_themes
 ScatterCorr
 
-# With just the Rv genes
-ScatterCorr_f <- merged_DoubleRun_Log10_filtered %>% 
+
+
+###########################################################
+######################## RAW READS ########################
+
+# Genes have been filtered to keep only protein coding Rv genes and then TPM done manually (not Bob's pipeline)
+
+# Log10 transform the data
+All_RawReadsf_Log10 <- All_RawReads_f %>% 
+  mutate(across(where(is.numeric), ~ .x + 1)) %>% # Add 1 to all the values
+  mutate(across(where(is.numeric), ~ log10(.x))) # Log transform the values
+
+# Make Gene a column
+All_RawReadsf_Log10 <- All_RawReadsf_Log10 %>% rename(Gene = X)
+
+
+###########################################################
+############### RAWREADS_F THP1 1e6 SPIKED ################
+
+Sample1 <- "Run1_THP1_1e6_1" # Run1
+Sample2 <- "Run2_THP1_1e6_1" # Run2
+ScatterCorr <- All_RawReadsf_Log10 %>%
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("THP1 spiked with 1e6 on two separate runs (different mRNA+LibraryPrep)"),
+       subtitle = "RawReads_f, Pearson correlation",
+       x = paste0("Log10(RawReads+1) ", Sample1), y = paste0("Log10(RawReads+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+
+###########################################################
+################## RAWREADS_F W0_12043 ####################
+
+Sample1 <- "Run1_W0_12043" # Run1
+Sample2 <- "Run2_W0_12043" # Run2
+ScatterCorr <- All_RawReadsf_Log10 %>% 
   ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
   geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
   geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
   # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
   geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
   labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
-       subtitle = "Only coding Rv genes shown, Pearson correlation",
-       x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
+       subtitle = "Raw Reads_f, Pearson correlation",
+       x = paste0("Log10(RawReads+1) ", Sample1), y = paste0("Log10(RawReads+1) ", Sample2)) + 
   stat_cor(method="pearson") + # add a correlation to the plot
   # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
   # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
   my_plot_themes
-ScatterCorr_f
+ScatterCorr
+
+###########################################################
+################## RAWREADS_F W0_14136 ####################
+
+Sample1 <- "Run1_W0_14136" # Run1
+Sample2 <- "Run2_W0_14136" # Run2
+ScatterCorr <- All_RawReadsf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "Raw Reads_f, Pearson correlation",
+       x = paste0("Log10(RawReads+1) ", Sample1), y = paste0("Log10(RawReads+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
 
 
