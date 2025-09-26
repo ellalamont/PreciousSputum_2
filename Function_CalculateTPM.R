@@ -60,27 +60,24 @@ CalculateTPM_RvOnly <- function(Raw_reads) {
 ############# TESTING #############
 
 
-load("Data/MTb.MapSet.rda")
-my_geneLengths <- mapSet[["geneMap"]] %>% select(GENE_ID, NAME, N_EXON_BASES)
-my_geneLengths_f <- my_geneLengths %>%
-  filter(grepl("^Rv[0-9]+[A-Za-z]?$", GENE_ID))
-my_geneLengths_ordered <- my_geneLengths_f[match(Run2_RawReads$X, my_geneLengths_f$GENE_ID), ]
-my_geneLengths_ordered <- my_geneLengths_f %>% mutate(Kilobases = N_EXON_BASES/1000)
-
-
-
-
-# GoodBiolSamples_wRv_RawReads
-
-load("Data/MTb.MapSet.rda")
-my_geneLengths <- mapSet[["geneMap"]] %>% select(GENE_ID, NAME, N_EXON_BASES)
-my_geneLengths_ordered <- my_geneLengths[match(All_RawReads_f$X, my_geneLengths$GENE_ID), ]
-my_geneLengths_ordered <- my_geneLengths_ordered %>% mutate(Kilobases = N_EXON_BASES/1000)
-
-Raw_reads_2 <- All_RawReads_f %>% column_to_rownames("X")
-All_RPK <- Raw_reads_2 / my_geneLengths_ordered$Kilobases
-ScalingFactor <- colSums(All_RPK) / 1e6
-All_tpm <- sweep(All_RPK, 2, ScalingFactor, FUN = "/")
+# load("Data/MTb.MapSet.rda")
+# my_geneLengths <- mapSet[["geneMap"]] %>% select(GENE_ID, NAME, N_EXON_BASES)
+# my_geneLengths_f <- my_geneLengths %>%
+#   filter(grepl("^Rv[0-9]+[A-Za-z]?$", GENE_ID))
+# my_geneLengths_ordered <- my_geneLengths_f[match(Run2_RawReads$X, my_geneLengths_f$GENE_ID), ]
+# my_geneLengths_ordered <- my_geneLengths_f %>% mutate(Kilobases = N_EXON_BASES/1000)
+# 
+# # GoodBiolSamples_wRv_RawReads
+# 
+# load("Data/MTb.MapSet.rda")
+# my_geneLengths <- mapSet[["geneMap"]] %>% select(GENE_ID, NAME, N_EXON_BASES)
+# my_geneLengths_ordered <- my_geneLengths[match(All_RawReads_f$X, my_geneLengths$GENE_ID), ]
+# my_geneLengths_ordered <- my_geneLengths_ordered %>% mutate(Kilobases = N_EXON_BASES/1000)
+# 
+# Raw_reads_2 <- All_RawReads_f %>% column_to_rownames("X")
+# All_RPK <- Raw_reads_2 / my_geneLengths_ordered$Kilobases
+# ScalingFactor <- colSums(All_RPK) / 1e6
+# All_tpm <- sweep(All_RPK, 2, ScalingFactor, FUN = "/")
 
 
 # 9/1/25 Checking with the batch corrected data

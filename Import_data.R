@@ -72,7 +72,7 @@ Run1_pipeSummary <- Run1_pipeSummary %>%
 # BROTH DATA FROM PROBETEST 5
 ProbeTest5_pipeSummary <- read.csv("Data/ProbeTest5/ProbeTest5_Pipeline.Summary.Details_moreTrim.csv") 
 Broth_pipeSummary <- ProbeTest5_pipeSummary %>% 
-  filter(SampleID %in% c("H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9"))
+  filter(SampleID %in% c("H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9", "THP1_1e6_1a_S28"))
 
 ## PREDICTTB_RUN2
 # This has been edited to include more metadata!
@@ -88,28 +88,26 @@ All_pipeSummary <- merge(All_pipeSummary, Broth_pipeSummary, all = T)
 # Merge two columns
 All_pipeSummary <- All_pipeSummary %>% mutate(Type = coalesce(Type, Sample_Type)) %>%
   mutate(Type2 = coalesce(Type2, Sample_Type)) %>% 
+  mutate(Type2 = str_replace(Type2, "^THP1$", "THP1 spiked")) %>% 
   select(-Sample_Type) %>%
-  select(-c(N_Splice, P_Splice, Replicate, RT, CFU_per_g, CFU_per_mL, Ra_cells, EukrRNADep, Hyb_Time, Probe, Probe_ng, Pooled_Set, X)) %>%
+  select(-c(N_Splice, P_Splice, Replicate, RT, CFU_per_g, CFU_per_mL, Ra_cells, EukrRNADep, Hyb_Time, Probe, Probe_ng, Pooled_Set, X, mRNA_ng, ct, ttd)) %>%
   filter(SampleID != "Undetermined_S0")
 
+# Make a second SampleID column
 # Remove _S* From names
-# All_pipeSummary$SampleID <- gsub(x = All_pipeSummary$SampleID, pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
-
-
-# Reorder things
-# NOT DONE YET!
-# All_pipeSummary$Drug <- as.character(All_pipeSummary$Drug)
-# ordered_Drug <- c("Untreated", "RIF")
-# All_pipeSummary$Drug <- factor(All_pipeSummary$Drug, levels = ordered_Drug)
-
+All_pipeSummary$SampleID2 <- gsub(x = All_pipeSummary$SampleID, pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
+All_pipeSummary$Run2 <- gsub(x = All_pipeSummary$Run, pattern = "PredictTB_", replacement = "")
+All_pipeSummary <- All_pipeSummary %>% mutate(SampleID2 = paste0(Run2, "_", SampleID2))
 
 
 ###########################################################
 ########### LIST OF SAMPLES PASSING INSPECTION ############
 
 GoodSampleList <- All_pipeSummary %>%
-  filter(N_Genomic >= 1000000 & AtLeast.10.Reads >= (4499*0.8)) %>% 
-  pull(SampleID)
+  filter(N_Genomic >= 1000000 & AtLeast.10.Reads >= (4499*0.75)) %>% # CHANGED TO BE 75% !!!!
+  pull(SampleID2)
+
+# Checked and all the names are unique
 
 SputumSampleList <- GoodSampleList[grep("^W", GoodSampleList)]
 
@@ -117,7 +115,7 @@ BrothSampleList <- All_pipeSummary %>%
   filter(str_detect(SampleID, "Broth")) %>%
   pull(SampleID)
 
-
+GoodSamples_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList)
 
 ###########################################################
 ############### IMPORT AND PROCESS TPM VALUES #############
@@ -159,13 +157,15 @@ ProbeTest5_RawReads_Broth <- ProbeTest5_RawReads %>%
 Run2_RawReads <- read.csv("Data/PredictTB_Run2/Mtb.Expression.Gene.Data.readsM.csv")
 Run2_RawReads <- Run2_RawReads %>% 
   select(-contains("Undetermined")) %>% 
-  rename_with(~ paste0("Run2", .), -X) 
+  rename_with(~ paste0("Run2_", .), -X) 
   
-
 
 # Merge the RawReads I collected above
 All_RawReads <- merge(Run1_RawReads, Run2_RawReads, all = T)
 All_RawReads <- merge(All_RawReads, ProbeTest5_RawReads_Broth)
+
+# Remove the _S at the end
+names(All_RawReads) = gsub(pattern = "_S[0-9]+$", replacement = "", x = names(All_RawReads))
 
 # # Just keep the samples passing filter
 # All_RawReads <- All_RawReads %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
@@ -184,9 +184,11 @@ All_RawReads_f <- All_RawReads %>%
 source("Function_CalculateTPM.R")
 All_tpm_f <- CalculateTPM_RvOnly(All_RawReads_f)
 
-identical(All_tpm_f, All_tpm)
 
+# Remove the _S at the end
+names(All_tpm_f) = gsub(pattern = "_S[0-9]+$", replacement = "", x = names(All_tpm_f))
 
-
+# Subset just the GoodSamples
+GoodSamples_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList))
 
 
