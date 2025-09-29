@@ -80,7 +80,6 @@ Run2_pipeSummary <- read.csv("Data/PredictTB_Run2/Pipeline.Summary.Details.csv")
 Run2_pipeSummary <- Run2_pipeSummary %>%
   mutate(Run = "PredictTB_Run2")
 
-
 # Merge the pipeSummaries
 All_pipeSummary <- merge(Run1_pipeSummary, Run2_pipeSummary, all = T)
 All_pipeSummary <- merge(All_pipeSummary, Broth_pipeSummary, all = T)
@@ -99,23 +98,10 @@ All_pipeSummary$SampleID2 <- gsub(x = All_pipeSummary$SampleID, pattern = "_S.*"
 All_pipeSummary$Run2 <- gsub(x = All_pipeSummary$Run, pattern = "PredictTB_", replacement = "")
 All_pipeSummary <- All_pipeSummary %>% mutate(SampleID2 = paste0(Run2, "_", SampleID2))
 
+# Add a % of genes with >= 10 reads aligning column
+All_pipeSummary <- All_pipeSummary %>%
+  mutate(Txn_Coverage = round(AtLeast.10.Reads/4499*100))
 
-###########################################################
-########### LIST OF SAMPLES PASSING INSPECTION ############
-
-GoodSampleList <- All_pipeSummary %>%
-  filter(N_Genomic >= 1000000 & AtLeast.10.Reads >= (4499*0.75)) %>% # CHANGED TO BE 75% !!!!
-  pull(SampleID2)
-
-# Checked and all the names are unique
-
-SputumSampleList <- GoodSampleList[grep("^W", GoodSampleList)]
-
-BrothSampleList <- All_pipeSummary %>% 
-  filter(str_detect(SampleID, "Broth")) %>%
-  pull(SampleID)
-
-GoodSamples_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList)
 
 ###########################################################
 ############### IMPORT AND PROCESS TPM VALUES #############
@@ -184,11 +170,47 @@ All_RawReads_f <- All_RawReads %>%
 source("Function_CalculateTPM.R")
 All_tpm_f <- CalculateTPM_RvOnly(All_RawReads_f)
 
-
 # Remove the _S at the end
 names(All_tpm_f) = gsub(pattern = "_S[0-9]+$", replacement = "", x = names(All_tpm_f))
 
-# Subset just the GoodSamples
-GoodSamples_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList))
+###########################################################
+######## CALCULATE TXN COVERAGE FROM Rv GENES ONLY ########
+
+# Count, for each column (sample), how many genes have >= 10 reads
+NumGoodReads <- colSums(All_RawReads_f >= 10)
+
+# Add as new column in All_pipeSummary, matching by SampleID2
+All_pipeSummary$AtLeast.10.Reads_f <- NumGoodReads[All_pipeSummary$SampleID2]
+
+# Add transcriptional coverage
+All_pipeSummary <- All_pipeSummary %>% mutate(Txn_Coverage_f = round(AtLeast.10.Reads_f/4030*100))
+
+
+###########################################################
+########### LIST OF SAMPLES PASSING INSPECTION ############
+
+# Using the transcriptional coverage from Rv genes only! 
+
+# Know broth is good
+BrothSampleList <- All_pipeSummary %>% 
+  filter(str_detect(SampleID, "Broth")) %>%
+  pull(SampleID)
+
+# With 80% Transcriptional Coverage
+GoodSampleList80 <- All_pipeSummary %>%
+  filter(N_Genomic >= 1000000 & Txn_Coverage_f >= 80) %>% 
+  pull(SampleID2)
+SputumSampleList80 <- GoodSampleList80[grep("W", GoodSampleList80)]
+GoodSamples80_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList80)
+GoodSamples80_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList80))
+
+# With 50% Transcriptional Coverage
+GoodSampleList50 <- All_pipeSummary %>%
+  filter(N_Genomic >= 1000000 & Txn_Coverage_f >= 50) %>% 
+  pull(SampleID2)
+SputumSampleList50 <- GoodSampleList50[grep("W", GoodSampleList50)]
+GoodSamples50_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList50)
+GoodSamples50_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList50))
+
 
 
