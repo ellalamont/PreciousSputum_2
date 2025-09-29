@@ -107,24 +107,27 @@ All_pipeSummary <- All_pipeSummary %>%
 ############### IMPORT AND PROCESS TPM VALUES #############
 
 Run1_tpm <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.TPM.csv")
-Run1_tpm <- Run1_tpm %>% select(X, THP1_1e6_1_S67, contains("W"))
+Run1_tpm <- Run1_tpm %>% 
+  select(X, THP1_1e6_1_S67, contains("W")) %>%
+  rename_with(~ paste0("Run1_", .), -X) # Add Run1 to the beginning of every column because some have the same name
 
 # Just pull the tpm of the THP1 spiked from another run: THP1 1e6_1 (Predict rack 2 box 1 I04)
 # Need THP1 1e6_1a from the Januaray run. Also need 
 ProbeTest5_tpm <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.TPM_moreTrim.csv") 
-ProbeTest5_tpm_Broth <- ProbeTest5_tpm %>% select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9, THP1_1e6_1a_S28)
+ProbeTest5_tpm_Broth <- ProbeTest5_tpm %>% 
+  select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9, THP1_1e6_1a_S28) %>%
+  rename_with(~ paste0("ProbeTest5_", .), -X) 
 
 Run2_tpm <- read.csv("Data/PredictTB_Run2/Mtb.Expression.Gene.Data.TPM.csv")
-Run2_tpm <- Run2_tpm %>% select(-contains("Undetermined"))
+Run2_tpm <- Run2_tpm %>% 
+  select(-contains("Undetermined")) %>% 
+  rename_with(~ paste0("Run2_", .), -X) 
 
-# Adjust the names so they are slightly shorter
-# names(All_tpm) <- gsub(x = names(All_tpm), pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
+All_tpm <- merge(Run1_tpm, ProbeTest5_tpm_Broth, all = T)
+All_tpm <- merge(All_tpm, Run2_tpm, all = T)
 
-# rownames(All_tpm) <- All_tpm[,1] # add the rownames
-
-# Need to make sure there is a Gene column (gets lots)
-# All_tpm <- All_tpm %>% 
-#   rename(Gene = X) 
+# Remove the _S at the end
+names(All_tpm) <- gsub(x = names(All_tpm), pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
 
 
 ###########################################################
@@ -133,6 +136,7 @@ Run2_tpm <- Run2_tpm %>% select(-contains("Undetermined"))
 Run1_RawReads <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.readsM.csv")
 Run1_RawReads <- Run1_RawReads %>% 
   select(X, THP1_1e6_1_S67, contains("W")) %>%
+  select(-contains("NoRT")) %>%
   rename_with(~ paste0("Run1_", .), -X) # Add Run1 to the beginning of every column because some have the same name
 
 ProbeTest5_RawReads <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.readsM_moreTrim.csv")
@@ -171,7 +175,44 @@ source("Function_CalculateTPM.R")
 All_tpm_f <- CalculateTPM_RvOnly(All_RawReads_f)
 
 # Remove the _S at the end
-names(All_tpm_f) = gsub(pattern = "_S[0-9]+$", replacement = "", x = names(All_tpm_f))
+# names(All_tpm_f) = gsub(pattern = "_S[0-9]+$", replacement = "", x = names(All_tpm_f))
+
+
+###########################################################
+#################### BATCH CORRECTION #####################
+# Using CombatSeq
+
+count_matrix <- as.matrix(All_RawReads_f %>% column_to_rownames("X"))
+# Ensure integer counts
+mode(count_matrix) <- "integer"
+
+# Reorder metadata to match column order in count_matrix
+meta <- All_pipeSummary[match(colnames(count_matrix), All_pipeSummary$SampleID2), ]
+
+# Check alignment
+all(meta$SampleID2 == colnames(count_matrix))  # should be TRUE
+
+# IF NOT TRUE RUN THESE:
+## This will show the samples in count_matrix that don't match metadata
+# colnames(count_matrix)[!colnames(count_matrix) %in% All_pipeSummary$SampleID2]
+## And the opposite: metadata samples not in count_matrix
+# All_pipeSummary$SampleID2[!All_pipeSummary$SampleID2 %in% colnames(count_matrix)]
+
+
+# Extract batch (run) and condition (for checking later)
+batch <- meta$Run
+condition <- meta$Type2
+
+# Run ComBat-Seq
+combat_counts <- ComBat_seq(
+  count_matrix,
+  batch = batch,
+  group = condition # optional, helps preserve biological signal
+)
+
+# Now convert to TPM
+All_RawReads_f.bc <- as.data.frame(combat_counts) %>% rownames_to_column("X")
+All_tpm_f.bc <- CalculateTPM_RvOnly(All_RawReads_f.bc)
 
 ###########################################################
 ######## CALCULATE TXN COVERAGE FROM Rv GENES ONLY ########
@@ -203,6 +244,8 @@ GoodSampleList80 <- All_pipeSummary %>%
 SputumSampleList80 <- GoodSampleList80[grep("W", GoodSampleList80)]
 GoodSamples80_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList80)
 GoodSamples80_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList80))
+GoodSamples80_tpm <- All_tpm %>% select(all_of(GoodSampleList80))
+GoodSamples80_tpmfbc <- All_tpm_f.bc %>% select(all_of(GoodSampleList80))
 
 # With 50% Transcriptional Coverage
 GoodSampleList50 <- All_pipeSummary %>%
