@@ -138,10 +138,10 @@ PCA_fig <- my_PCA_df %>%
        y = paste0("PC2: ", summary_PCA[2,1], "%")) +
   my_plot_themes
 PCA_fig
-ggsave(PCA_fig,
-       file = paste0("GoodSamples_tpmf_txnCov50.pdf"),
-       path = "Figures/PCA",
-       width = 10, height = 6, units = "in")
+# ggsave(PCA_fig,
+#        file = paste0("GoodSamples_tpmf_txnCov50.pdf"),
+#        path = "Figures/PCA",
+#        width = 10, height = 6, units = "in")
 
 
 ###########################################################
@@ -233,3 +233,7 @@ PCA_fig <- my_PCA_df %>%
        y = paste0("PC2: ", summary_PCA[2,1], "%")) +
   my_plot_themes
 PCA_fig
+ggsave(PCA_fig,
+       file = paste0("GoodSamples_tpmfbc_txnCov80.pdf"),
+       path = "Figures/PCA",
+       width = 10, height = 6, units = "in")
