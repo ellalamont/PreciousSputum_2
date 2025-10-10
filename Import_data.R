@@ -182,37 +182,37 @@ All_tpm_f <- CalculateTPM_RvOnly(All_RawReads_f)
 #################### BATCH CORRECTION #####################
 # Using CombatSeq
 
-count_matrix <- as.matrix(All_RawReads_f %>% column_to_rownames("X"))
-# Ensure integer counts
-mode(count_matrix) <- "integer"
-
-# Reorder metadata to match column order in count_matrix
-meta <- All_pipeSummary[match(colnames(count_matrix), All_pipeSummary$SampleID2), ]
-
-# Check alignment
-all(meta$SampleID2 == colnames(count_matrix))  # should be TRUE
-
-# IF NOT TRUE RUN THESE:
-## This will show the samples in count_matrix that don't match metadata
-# colnames(count_matrix)[!colnames(count_matrix) %in% All_pipeSummary$SampleID2]
-## And the opposite: metadata samples not in count_matrix
-# All_pipeSummary$SampleID2[!All_pipeSummary$SampleID2 %in% colnames(count_matrix)]
-
-
-# Extract batch (run) and condition (for checking later)
-batch <- meta$Run
-condition <- meta$Type2
-
-# Run ComBat-Seq
-combat_counts <- ComBat_seq(
-  count_matrix,
-  batch = batch,
-  group = condition # optional, helps preserve biological signal
-)
-
-# Now convert to TPM
-All_RawReads_f.bc <- as.data.frame(combat_counts) %>% rownames_to_column("X")
-All_tpm_f.bc <- CalculateTPM_RvOnly(All_RawReads_f.bc)
+# count_matrix <- as.matrix(All_RawReads_f %>% column_to_rownames("X"))
+# # Ensure integer counts
+# mode(count_matrix) <- "integer"
+# 
+# # Reorder metadata to match column order in count_matrix
+# meta <- All_pipeSummary[match(colnames(count_matrix), All_pipeSummary$SampleID2), ]
+# 
+# # Check alignment
+# all(meta$SampleID2 == colnames(count_matrix))  # should be TRUE
+# 
+# # IF NOT TRUE RUN THESE:
+# ## This will show the samples in count_matrix that don't match metadata
+# # colnames(count_matrix)[!colnames(count_matrix) %in% All_pipeSummary$SampleID2]
+# ## And the opposite: metadata samples not in count_matrix
+# # All_pipeSummary$SampleID2[!All_pipeSummary$SampleID2 %in% colnames(count_matrix)]
+# 
+# 
+# # Extract batch (run) and condition (for checking later)
+# batch <- meta$Run
+# condition <- meta$Type2
+# 
+# # Run ComBat-Seq
+# combat_counts <- ComBat_seq(
+#   count_matrix,
+#   batch = batch,
+#   group = condition # optional, helps preserve biological signal
+# )
+# 
+# # Now convert to TPM
+# All_RawReads_f.bc <- as.data.frame(combat_counts) %>% rownames_to_column("X")
+# All_tpm_f.bc <- CalculateTPM_RvOnly(All_RawReads_f.bc)
 
 ###########################################################
 ######## CALCULATE TXN COVERAGE FROM Rv GENES ONLY ########
