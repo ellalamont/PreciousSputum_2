@@ -22,11 +22,12 @@ library(ggcorrplot)
 library(ggfortify) # To make pca plots with plotly
 library(edgeR) # for cpm
 library(sva) # For ComBat_seq batch correction
+library(stringr)
 
 # DuffyTools
-library(devtools)
+# library(devtools)
 # install_github("robertdouglasmorrison/DuffyTools")
-library(DuffyTools)
+# library(DuffyTools)
 # install_github("robertdouglasmorrison/DuffyNGS")
 # BiocManager::install("robertdouglasmorrison/DuffyTools")
 
@@ -35,21 +36,7 @@ library(DuffyTools)
 # BiocManager::install("Biobase")
 
 
-# cbPalette_1 <- c("#999999", "#E69F00") # Gold and Grey
-# cbPalette_1.5 <- c("#E69F00", "#999999") # Gold and Grey
-# cbPalette_2 <- c( "#0072B2", "#999999") # Blue and Grey
-# cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-# cbPalette2 <-  c("#bfbfbf", "#56B4E9")
-# cbPalette3 <-  c("#bfbfbf", "#E69F00")
-cbPalette4 <- c("#56B4E9", "#009E73", "#F0E442","#CC79A7")
-# c25 <- c(
-#   "dodgerblue2", "#E31A1C", "green4",
-#   "#6A3D9A","#FF7F00","black", "gold1",
-#   "skyblue2", "#FB9A99","palegreen2","#CAB2D6",
-#   "#FDBF6F","gray70", "khaki2","maroon", "orchid1", "deeppink1", "blue1", "steelblue4","darkturquoise", "green1", "yellow4", "yellow3","darkorange4", "brown"
-# )
-# c12 <- c("dodgerblue2", "#E31A1C", "green4", "#6A3D9A", "#FF7F00", "black", "palegreen2", "gray70", "maroon", "orchid1", "darkturquoise", "darkorange4")
-# c16 <- c("dodgerblue2", "#E31A1C", "green4", "#6A3D9A", "#FF7F00", "black","gold1", "#FB9A99", "#CAB2D6", "palegreen2", "gray70", "maroon", "orchid1", "blue1", "darkturquoise", "darkorange4")
+
 
 
 # Stop scientific notation
@@ -245,7 +232,7 @@ SputumSampleList80 <- GoodSampleList80[grep("W", GoodSampleList80)]
 GoodSamples80_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList80)
 GoodSamples80_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList80))
 GoodSamples80_tpm <- All_tpm %>% select(all_of(GoodSampleList80))
-GoodSamples80_tpmfbc <- All_tpm_f.bc %>% select(all_of(GoodSampleList80))
+# GoodSamples80_tpmfbc <- All_tpm_f.bc %>% select(all_of(GoodSampleList80))
 
 # With 50% Transcriptional Coverage
 GoodSampleList50 <- All_pipeSummary %>%
