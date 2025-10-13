@@ -83,15 +83,15 @@ Virulence.Persistence_iModulons_pattern <- str_c(Virulence.Persistence_iModulons
 ###########################################################
 ################### DOWNLOAD GENE SETS ####################
 
-allGeneSetList$MTb.iModulons
-
-iModulons_df <- as.data.frame(allGeneSetList$MTb.iModulons)  
-# write.csv(iModulons_df, file = "iModulons_GeneSets.csv")
-
-iModulons_df <- data.frame(
-  iModulon = names(allGeneSetList$MTb.iModulons),
-  genes = sapply(allGeneSetList$MTb.iModulons, paste, collapse = ", ")
-)
-
-write.csv(iModulons_df, file = "Data/iModulons_GeneSets_2.csv", row.names = FALSE)
+# allGeneSetList$MTb.iModulons
+# 
+# iModulons_df <- as.data.frame(allGeneSetList$MTb.iModulons)  
+# # write.csv(iModulons_df, file = "iModulons_GeneSets.csv")
+# 
+# iModulons_df <- data.frame(
+#   iModulon = names(allGeneSetList$MTb.iModulons),
+#   genes = sapply(allGeneSetList$MTb.iModulons, paste, collapse = ", ")
+# )
+# 
+# write.csv(iModulons_df, file = "Data/iModulons_GeneSets_2.csv", row.names = FALSE)
 
