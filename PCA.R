@@ -44,7 +44,8 @@ my_fav_shapes <- c(`W0 sputum (cure)` = 21, `W0 sputum (relapse)` = 21, `Broth`=
 # Rv GENES ONLY INCLUDED IN TXN COVERAGE
 
 # Convert gene column to rownames
-my_tpm <- GoodSamples80_tpmf # %>% column_to_rownames(var = "X")
+my_tpm <- GoodSamples80_tpmf  %>% # %>% column_to_rownames(var = "X")
+  select(-c(Run2_THP1_1e6_1, ProbeTest5_THP1_1e6_1a, ProbeTest5_THP1_1e6_1a, Run1_THP1_1e6_1)) # Remove the spiked samples
 
 # Transform the data
 my_tpm_t <- as.data.frame(t(my_tpm))
@@ -58,9 +59,9 @@ my_PCA <- prcomp(my_tpm_t2, scale = TRUE)
 # See the % Variance explained
 summary(my_PCA)
 summary_PCA <- format(round(as.data.frame(summary(my_PCA)[["importance"]]['Proportion of Variance',]) * 100, digits = 1), nsmall = 1) # format and round used to control the digits after the decimal place
-summary_PCA[1,1] # PC1 explains 19.2% of variance
-summary_PCA[2,1] # PC2 explains 7.4% of variance
-summary_PCA[3,1] # PC3 explains 6.7% of variance
+summary_PCA[1,1] # PC1 explains 19.8% of variance
+summary_PCA[2,1] # PC2 explains 7.1% of variance
+summary_PCA[3,1] # PC3 explains 5.6% of variance
 
 # MAKE PCA PLOT with GGPLOT 
 my_PCA_df <- as.data.frame(my_PCA$x[, 1:3]) # Extract the first 3 PCs
@@ -73,17 +74,17 @@ PCA_fig <- my_PCA_df %>%
   # geom_text_repel(aes(label = Lineage), size = 2.5) + 
   scale_fill_manual(values = my_fav_colors) +  
   scale_shape_manual(values = my_fav_shapes) + 
-  geom_text_repel(aes(label = Run), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  # geom_text_repel(aes(label = Run), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
   labs(title = "PCA: >1M reads and >80% genes with at least 10 reads",
        subtitle = "TPM filtered (Rv genes only)",
        x = paste0("PC1: ", summary_PCA[1,1], "%"),
        y = paste0("PC2: ", summary_PCA[2,1], "%")) +
   my_plot_themes
 PCA_fig
-# ggsave(PCA_fig,
-#        file = paste0("GoodSamples_tpmf_txnCov80.pdf"),
-#        path = "Figures/PCA",
-#        width = 10, height = 6, units = "in")
+ggsave(PCA_fig,
+       file = paste0("GoodSamples_tpmf_txnCov80_v2.pdf"),
+       path = "Figures/PCA",
+       width = 10, height = 6, units = "in")
 
 
 # 3D plot
