@@ -261,5 +261,29 @@ SputumSampleList50 <- GoodSampleList50[grep("W", GoodSampleList50)]
 GoodSamples50_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList50)
 GoodSamples50_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList50))
 
+# Number of sputum samples with > 1 million reads
+All_pipeSummary %>%
+  filter(N_Genomic >= 1000000) %>% 
+  filter(str_detect(SampleID, "W")) %>%
+  # filter(Week == "Week 0") %>% # 41
+  # filter(Week == "Week 2") %>% # 16
+  nrow()
+# 57
 
+# Number of sputum samples with > 80% Txn coverage
+All_pipeSummary %>%
+  filter(Txn_Coverage_f >= 80) %>% 
+  filter(str_detect(SampleID, "W")) %>%
+  # filter(Week == "Week 0") %>% # 38
+  # filter(Week == "Week 2") %>% # 5
+  nrow()
+# 43
 
+# Number of sputum samples with > 50% Txn coverage
+All_pipeSummary %>%
+  filter(Txn_Coverage_f >= 50) %>% 
+  filter(str_detect(SampleID, "W")) %>%
+  # filter(Week == "Week 0") %>% # 45
+  # filter(Week == "Week 2") %>% # 15
+  nrow()
+# 43

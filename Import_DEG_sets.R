@@ -16,6 +16,9 @@ source("Import_data.R")
 `W0.relapse.ComparedTo.Ra` <- read.delim("Data/Differential_Expression/W0.relapse_vs_Ra/W0_relapse.MTb.Meta.JOINED.txt")
 `W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression/W2.cure_vs_Ra/W2_cure.MTb.Meta.JOINED.txt")
 
+# Specific gene sets I made
+TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression/W0.cure_vs_W2.cure/TAR_Poonawala2024_W2_cure.MTb.MetaGeneSets.UP.txt")
+
 
 ###########################################################
 ################ MAKE A LIST OF ALL DFs ###################

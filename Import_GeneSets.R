@@ -32,15 +32,14 @@ allGeneSetList <- lapply(allGeneSetList, function(gset) {
 
 # First! Make the .csv file by hand. Needs a "Gene" and a "GeneSet" column
 
-# XXX_GeneSets <- read.csv("GeneSet_Data/XXX_GeneSets.csv")
+# XXX_GeneSets <- read.csv("Data/GeneSet_Data/XXX_GeneSets.csv")
 
 # Create a list where each GeneSet is a named element
 # Needs to be called allGeneSets so it is easier to load with all the others
 # allGeneSets <- split(XXX_GeneSets$Gene, XXX_GeneSets$GeneSet)
 
 # SAVE AS RDA FOR LATER 
-# save(allGeneSets, file = "GeneSet_Data/XXXGeneSets.rda")
-
+# save(allGeneSets, file = "Data/GeneSet_Data/XXXGeneSets.rda")
 
 
 ###########################################################

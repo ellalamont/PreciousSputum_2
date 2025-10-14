@@ -39,6 +39,10 @@ Num1Reads <- colSums(W0_13051_RawReadsf >= 1)
 # X   Run2_W0_13051 Run2.5_W0_13051 
 # 4030            3485            3702 
 
+Num0Reads <- colSums(W0_13051_RawReadsf == 0)
+# X   Run2_W0_13051 Run2.5_W0_13051 
+# 0             449             239 
+
 Num10Reads <- colSums(W0_13051_RawReadsf >= 10)
 # X   Run2_W0_13051 Run2.5_W0_13051 
 # 4030            1861            1897 

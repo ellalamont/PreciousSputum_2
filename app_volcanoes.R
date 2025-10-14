@@ -93,15 +93,15 @@ server <- function(input, output, session) {
   output$volcano_plot <- renderPlotly({
     
     # Add data for labelling a single gene
-    single_gene <- list_dfs_f[[input$my_comparison]] %>% 
+    single_gene <- list_dfs_f2[[input$my_comparison]] %>% 
       filter(GENE_ID == input$my_GeneID)
     
     # Add data for labelling a gene set
-    gene_set <- list_dfs_f[[input$my_comparison]] %>%
+    gene_set <- list_dfs_f2[[input$my_comparison]] %>%
       filter(GENE_ID %in% allGeneSetList[[input$my_GeneSetSource]][[input$my_GeneSet]])
     
     # Make new data name for plotting
-    plot_data <- list_dfs_f[[input$my_comparison]]
+    plot_data <- list_dfs_f2[[input$my_comparison]]
     
     # Choose DE column and DE_labels column based on selected threshold
     if (input$log2fc_threshold == "1") {
@@ -147,8 +147,8 @@ server <- function(input, output, session) {
     x_min <- min(plot_build$layout$panel_scales_x[[1]]$range$range)
     
     # Add the gene number annotations
-    text_up <- list_dfs_f[[input$my_comparison]] %>% filter(.data[[de_col]] == "significant up") %>% nrow()
-    text_down <- list_dfs_f[[input$my_comparison]] %>% filter(.data[[de_col]] == "significant down") %>% nrow()
+    text_up <- list_dfs_f2[[input$my_comparison]] %>% filter(.data[[de_col]] == "significant up") %>% nrow()
+    text_down <- list_dfs_f2[[input$my_comparison]] %>% filter(.data[[de_col]] == "significant down") %>% nrow()
     my_volcano_annotated <- my_volcano +
       annotate("text", x = (x_max+1)/2, y = y_max - 0.1, label = paste0(text_up, " genes"), color = "#bb0c00", fontface = "bold", fill = "transparent", label.size = 0.3) + 
       annotate("text", x = (x_min-1)/2, y = y_max - 0.1, label = paste0(text_down, " genes"), color = "#00AFBB", fontface = "bold", fill = "transparent", label.size = 0.3)
