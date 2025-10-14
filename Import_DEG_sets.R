@@ -36,6 +36,15 @@ df_names <- c("W0.cure.ComparedTo.Ra",
 names(list_dfs) <- df_names
 
 
+###########################################################
+################# REMOVE NON-CODING GENES #################
+# 8/15/25: After talking to DRS, decided to remove all the non-coding genes and all the MT genes, and leave just the coding genes starting with Rv. So need to remove these at the raw read level and calculate new TPM
+# The Pathcap people also had issues with ncRNAs: https://www.nature.com/articles/s41598-019-55633-6#Sec8
+
+list_dfs_f <- lapply(list_dfs, function(df) {
+  df %>% filter(str_detect(GENE_ID, "^Rv\\d+.*"))
+})
+
 
 ###########################################################
 ############### ADD COLUMNS OF DE VALUES ##################
@@ -43,14 +52,14 @@ names(list_dfs) <- df_names
 # 10/10/25: Adjusting this so it is all FDR p-values and I have Log2Fold >1 and >2
 
 # Make a new list to hold dataframes with extra columns
-list_dfs_2 <- list()
+list_dfs_f2 <- list()
 
 ordered_DE <- c("significant down", "not significant", "significant up")
 
 # Add extra DE columns to each dataframe
-for (i in 1:length(list_dfs)) {
+for (i in 1:length(list_dfs_f)) {
   
-  current_df <- list_dfs[[i]]
+  current_df <- list_dfs_f[[i]]
   current_df_name <- df_names[i]
   
   # Calculate the FDR p-value
@@ -66,17 +75,8 @@ for (i in 1:length(list_dfs)) {
   current_df$DE2 <- factor(current_df$DE2, levels = ordered_DE)
   current_df$DE2_labels <- ifelse(current_df$DE2 != "not significant", current_df$GENE_NAME, NA)
 
-  list_dfs_2[[current_df_name]] <- current_df
+  list_dfs_f2[[current_df_name]] <- current_df
 }
-
-###########################################################
-################# REMOVE NON-CODING GENES #################
-# 8/15/25: After talking to DRS, decided to remove all the non-coding genes and all the MT genes, and leave just the coding genes starting with Rv. So need to remove these at the raw read level and calculate new TPM
-# The Pathcap people also had issues with ncRNAs: https://www.nature.com/articles/s41598-019-55633-6#Sec8
-
-list_dfs_f <- lapply(list_dfs_2, function(df) {
-  df %>% filter(str_detect(GENE_ID, "^Rv\\d+.*"))
-})
 
 
 

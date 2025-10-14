@@ -43,8 +43,8 @@ make_volcano_function_FDR <- function(my_df, graph_title, DE_limit) {
   my_volcano <- my_df %>%
     ggplot(aes(x = LOG2FOLD, y = -log10(FDR_PVALUE), col = .data[[my_DE_col]], label = .data[[my_DE_label]], text = GENE_NAME, label2 = GENE_ID)) + # text is for plotly, could be GENE_ID
     geom_point(alpha = 0.7) + 
-    labs(title = graph_title) + 
-    geom_vline(xintercept = c(-2,2), col = "grey", linetype = "dashed") + 
+    labs(title = paste0(graph_title, " Log2Fold=", DE_limit)) + 
+    geom_vline(xintercept = c(-DE_limit,DE_limit), col = "grey", linetype = "dashed") + 
     geom_hline(yintercept = -log10(0.05), col = "grey", linetype = "dashed") + 
     geom_text_repel(max.overlaps = 10, size = 4) +  # Can do geom_text_repel or geom_label_rebel # Changed from 3 to 4
     
@@ -71,7 +71,7 @@ make_volcano_function_FDR <- function(my_df, graph_title, DE_limit) {
 
 
 
-single_plot <- make_volcano_function_DE2_FDR(list_dfs_f[[1]], df_names[1], DE_limit = 2)
+single_plot <- make_volcano_function_DE2_FDR(list_dfs_f2[[1]], df_names[1], DE_limit = 2)
 single_plot
 # ggsave(single_plot,
 #        file = "GoodSputumSubset.ComparedTo.Broth_FilteredFDR_2.pdf",
@@ -80,10 +80,10 @@ single_plot
 
 # Loop for all the volcano
 my_path <- "Figures/Volcano/Log2Fold2_FDR"
-for (i in 1:length(list_dfs_f)) { ## USING FILTERED DATA ##
+for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
   current_df_name <- df_names[i]
   filename <- paste0(current_df_name, "_f_FDR.pdf")
-  my_plot <- make_volcano_function_FDR(list_dfs_f[[i]], df_names[i], 2) ## USING FILTERED DATA ##
+  my_plot <- make_volcano_function_FDR(list_dfs_f2[[i]], df_names[i], 2) ## USING FILTERED DATA ##
   ggsave(my_plot,
          file = filename,
          path = my_path,
@@ -91,10 +91,10 @@ for (i in 1:length(list_dfs_f)) { ## USING FILTERED DATA ##
 }
 
 my_path <- "Figures/Volcano/Log2Fold1_FDR"
-for (i in 1:length(list_dfs_f)) { ## USING FILTERED DATA ##
+for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
   current_df_name <- df_names[i]
   filename <- paste0(current_df_name, "_f_FDR.pdf")
-  my_plot <- make_volcano_function_FDR(list_dfs_f[[i]], df_names[i], 1) ## USING FILTERED DATA ##
+  my_plot <- make_volcano_function_FDR(list_dfs_f2[[i]], df_names[i], 1) ## USING FILTERED DATA ##
   ggsave(my_plot,
          file = filename,
          path = my_path,

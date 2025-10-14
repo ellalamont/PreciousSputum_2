@@ -36,7 +36,8 @@ my_fav_shapes <- c(`W0 sputum (cure)` = 21, `W0 sputum (relapse)` = 21, `Broth`=
 ###########################################################
 ####################### SUBSET DATA #######################
 
-my_pipeSummary <- All_pipeSummary %>% filter(!Type2 %in% c("THP1 spiked", "Broth"))
+my_pipeSummary <- All_pipeSummary %>% filter(!Type2 %in% c("THP1 spiked", "Broth")) %>%
+  filter(Run != "PredictTB_Run2.5")
 
 
 ###########################################################

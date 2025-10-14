@@ -67,10 +67,17 @@ Run2_pipeSummary <- read.csv("Data/PredictTB_Run2/Pipeline.Summary.Details.csv")
 Run2_pipeSummary <- Run2_pipeSummary %>%
   mutate(Run = "PredictTB_Run2")
 
+## PREDICTTB_RUN2.5
+# This has been edited to include more metadata!
+Run2.5_pipeSummary <- read.csv("Data/PredictTB_Run2_5/Pipeline.Summary.Details.csv") 
+# This is giving an error, not sure why
+Run2.5_pipeSummary <- Run2.5_pipeSummary %>%
+  mutate(Run = "PredictTB_Run2.5")
+
 # Merge the pipeSummaries
 All_pipeSummary <- merge(Run1_pipeSummary, Run2_pipeSummary, all = T)
 All_pipeSummary <- merge(All_pipeSummary, Broth_pipeSummary, all = T)
-
+All_pipeSummary <- merge(All_pipeSummary, Run2.5_pipeSummary, all = T)
 # Merge two columns
 All_pipeSummary <- All_pipeSummary %>% mutate(Type = coalesce(Type, Sample_Type)) %>%
   mutate(Type2 = coalesce(Type2, Sample_Type)) %>% 
@@ -110,8 +117,14 @@ Run2_tpm <- Run2_tpm %>%
   select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run2_", .), -X) 
 
+Run2.5_tpm <- read.csv("Data/PredictTB_Run2_5/Mtb.Expression.Gene.Data.TPM.csv")
+Run2.5_tpm <- Run2.5_tpm %>% 
+  select(-contains("Undetermined")) %>% 
+  rename_with(~ paste0("Run2.5_", .), -X) 
+
 All_tpm <- merge(Run1_tpm, ProbeTest5_tpm_Broth, all = T)
 All_tpm <- merge(All_tpm, Run2_tpm, all = T)
+All_tpm <- merge(All_tpm, Run2.5_tpm, all = T)
 
 # Remove the _S at the end
 names(All_tpm) <- gsub(x = names(All_tpm), pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
@@ -135,11 +148,17 @@ Run2_RawReads <- read.csv("Data/PredictTB_Run2/Mtb.Expression.Gene.Data.readsM.c
 Run2_RawReads <- Run2_RawReads %>% 
   select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run2_", .), -X) 
+
+Run2.5_RawReads <- read.csv("Data/PredictTB_Run2_5/Mtb.Expression.Gene.Data.readsM.csv")
+Run2.5_RawReads <- Run2.5_RawReads %>% 
+  select(-contains("Undetermined")) %>% 
+  rename_with(~ paste0("Run2.5_", .), -X) 
   
 
 # Merge the RawReads I collected above
 All_RawReads <- merge(Run1_RawReads, Run2_RawReads, all = T)
 All_RawReads <- merge(All_RawReads, ProbeTest5_RawReads_Broth)
+All_RawReads <- merge(All_RawReads, Run2.5_RawReads)
 
 # Remove the _S at the end
 names(All_RawReads) = gsub(pattern = "_S[0-9]+$", replacement = "", x = names(All_RawReads))
