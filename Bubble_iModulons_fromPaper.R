@@ -23,6 +23,8 @@ my_plot_themes <- theme_bw() +
         plot.subtitle = element_text(size=7)# , 
         # plot.margin = margin(10, 10, 10, 20)# ,
   )
+facet_themes <- theme(strip.background=element_rect(fill="white", linewidth = 0.9),
+                      strip.text = element_text(size = 7))
 
 
 ###########################################################
