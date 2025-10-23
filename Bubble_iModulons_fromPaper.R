@@ -1,6 +1,7 @@
 # iModulons gene sets comparisons
 # E. Lamont
 # 10/13/25
+# 10/23/25 re-run with Run1-3
 
 
 # Here the gene set enrichment analysis has already been done in Bob's meta way and I am just visualizing the result
@@ -304,7 +305,7 @@ my_bubblePlot <- my_df2 %>%
   my_plot_themes + facet_themes + theme(legend.position = "none")
 my_bubblePlot
 # ggsave(my_bubblePlot,
-#        file = paste0(my_title, ".pdf"),
+#        file = paste0(my_title, "Run1to3.pdf"),
 #        path = "Figures/Bubbles/iModulons/fromPaper",
 #        width = 6, height = 7, units = "in")
 

@@ -10,14 +10,12 @@ source("Import_data.R")
 ###########################################################
 ################### IMPORT BOB's DE DATA ##################
 
-`W0.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression/W0.cure_vs_Ra/W0_cure.MTb.Meta.JOINED.txt")
-`W0.relapse.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression/W0.cure_vs_W0.relapse/W0_relapse.MTb.Meta.JOINED.txt")
-`W2.cure.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression/W0.cure_vs_W2.cure/W2_cure.MTb.Meta.JOINED.txt")
-`W0.relapse.ComparedTo.Ra` <- read.delim("Data/Differential_Expression/W0.relapse_vs_Ra/W0_relapse.MTb.Meta.JOINED.txt")
-`W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression/W2.cure_vs_Ra/W2_cure.MTb.Meta.JOINED.txt")
+`W0.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_Ra/W0_cure.MTb.Meta.JOINED.txt")
+`W0.relapse.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W0.relapse/W0_relapse.MTb.Meta.JOINED.txt")
+`W2.cure.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/W2_cure.MTb.Meta.JOINED.txt")
+`W0.relapse.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.relapse_vs_Ra/W0_relapse.MTb.Meta.JOINED.txt")
+`W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W2.cure_vs_Ra/W2_cure.MTb.Meta.JOINED.txt")
 
-# Specific gene sets I made
-TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression/W0.cure_vs_W2.cure/TAR_Poonawala2024_W2_cure.MTb.MetaGeneSets.UP.txt")
 
 
 ###########################################################
@@ -87,10 +85,12 @@ for (i in 1:length(list_dfs_f)) {
 ###########################################################
 ############# IMPORT BOB's METAGENESETS DATA ##############
 
-`MetaGeneSets_W0.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression/W0.cure_vs_Ra/W0_cure.MTb.MetaGeneSets.UP.txt")
-`MetaGeneSets_W0.relapse.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression/W0.cure_vs_W0.relapse/W0_relapse.MTb.MetaGeneSets.UP.txt")
-`MetaGeneSets_W2.cure.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression/W0.cure_vs_W2.cure/W2_cure.MTb.MetaGeneSets.UP.txt")
-`MetaGeneSets_W0.relapse.ComparedTo.Ra` <- read.delim("Data/Differential_Expression/W0.relapse_vs_Ra/W0_relapse.MTb.MetaGeneSets.UP.txt")
-`MetaGeneSets_W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression/W2.cure_vs_Ra/W2_cure.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W0.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_Ra/W0_cure.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W0.relapse.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W0.relapse/W0_relapse.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W2.cure.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/W2_cure.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W0.relapse.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.relapse_vs_Ra/W0_relapse.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W2.cure_vs_Ra/W2_cure.MTb.MetaGeneSets.UP.txt")
 
+# Specific gene sets I made
+TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure_TAR/W2_cure.MTb.MetaGeneSets.UP.txt")
 
