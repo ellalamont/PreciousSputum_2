@@ -1,5 +1,5 @@
-# Import data for Run2 of the PredictTB samples
-# 9/18/25
+# Import data for Run1-3 of the PredictTB samples
+# 9/18/25, 10/23/25
 
 ################################################
 ################ LOAD PACKAGES #################
@@ -74,12 +74,21 @@ Run2.5_pipeSummary <- read.csv("Data/PredictTB_Run2_5/Pipeline.Summary.Details.c
 Run2.5_pipeSummary <- Run2.5_pipeSummary %>%
   mutate(Run = "PredictTB_Run2.5")
 
+## PREDICTTB_RUN3
+# This has been edited to include more metadata!
+Run3_pipeSummary <- read.csv("Data/PredictTB_Run3/Pipeline.Summary.Details.csv") 
+# This is giving an error, not sure why
+Run3_pipeSummary <- Run3_pipeSummary %>%
+  mutate(Run = "PredictTB_Run3")
+
 # Merge the pipeSummaries
 All_pipeSummary <- merge(Run1_pipeSummary, Run2_pipeSummary, all = T)
 All_pipeSummary <- merge(All_pipeSummary, Broth_pipeSummary, all = T)
 All_pipeSummary <- merge(All_pipeSummary, Run2.5_pipeSummary, all = T)
+All_pipeSummary <- merge(All_pipeSummary, Run3_pipeSummary, all = T)
 # Merge two columns
-All_pipeSummary <- All_pipeSummary %>% mutate(Type = coalesce(Type, Sample_Type)) %>%
+All_pipeSummary <- All_pipeSummary %>% 
+  mutate(Type = coalesce(Type, Sample_Type)) %>%
   mutate(Type2 = coalesce(Type2, Sample_Type)) %>% 
   mutate(Type2 = str_replace(Type2, "^THP1$", "THP1 spiked")) %>% 
   select(-Sample_Type) %>%
@@ -122,9 +131,15 @@ Run2.5_tpm <- Run2.5_tpm %>%
   select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run2.5_", .), -X) 
 
+Run3_tpm <- read.csv("Data/PredictTB_Run3/Mtb.Expression.Gene.Data.TPM.csv")
+Run3_tpm <- Run3_tpm %>% 
+  select(-contains("Undetermined")) %>% 
+  rename_with(~ paste0("Run3_", .), -X) 
+
 All_tpm <- merge(Run1_tpm, ProbeTest5_tpm_Broth, all = T)
 All_tpm <- merge(All_tpm, Run2_tpm, all = T)
 All_tpm <- merge(All_tpm, Run2.5_tpm, all = T)
+All_tpm <- merge(All_tpm, Run3_tpm, all = T)
 
 # Remove the _S at the end
 names(All_tpm) <- gsub(x = names(All_tpm), pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
@@ -153,12 +168,18 @@ Run2.5_RawReads <- read.csv("Data/PredictTB_Run2_5/Mtb.Expression.Gene.Data.read
 Run2.5_RawReads <- Run2.5_RawReads %>% 
   select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run2.5_", .), -X) 
+
+Run3_RawReads <- read.csv("Data/PredictTB_Run3/Mtb.Expression.Gene.Data.readsM.csv")
+Run3_RawReads <- Run3_RawReads %>% 
+  select(-contains("Undetermined")) %>% 
+  rename_with(~ paste0("Run3_", .), -X) 
   
 
 # Merge the RawReads I collected above
 All_RawReads <- merge(Run1_RawReads, Run2_RawReads, all = T)
 All_RawReads <- merge(All_RawReads, ProbeTest5_RawReads_Broth)
 All_RawReads <- merge(All_RawReads, Run2.5_RawReads)
+All_RawReads <- merge(All_RawReads, Run3_RawReads)
 
 # Remove the _S at the end
 names(All_RawReads) = gsub(pattern = "_S[0-9]+$", replacement = "", x = names(All_RawReads))
@@ -238,52 +259,66 @@ All_pipeSummary <- All_pipeSummary %>% mutate(Txn_Coverage_f = round(AtLeast.10.
 
 # Using the transcriptional coverage from Rv genes only! 
 
+# Remove the duplicates 
+my_pipeSummary <- All_pipeSummary %>% 
+  filter(!SampleID2 %in% c("Run1_W0_12024", "Run3_W0_12029", "Run1_W0_12043", "Run1_W0_12082", "Run1_W0_13026", "Run3_W0_13051", "Run2.5_W0_13051", "Run2_W0_13094", "Run1_W0_14051", "Run1_W0_14136", "Run1_W0_15072", "Run2_W0_15083", "Run2_W2_11058", "Run3_W2_12008", "Run2_W2_12010", "Run3_W2_12012", "Run3_W2_12029", "Run2_W2_12032", "Run3_W2_12043", "Run3_W2_13026_B", "Run3_W2_13045", "Run2_W2_14113", "Run2_W2_14136", "Run3_W2_15017", "Run2_W2_15029", "Run2_W2_15065", "Run2_W2_15089"))
+
 # Know broth is good
-BrothSampleList <- All_pipeSummary %>% 
+BrothSampleList <- my_pipeSummary %>% 
   filter(str_detect(SampleID, "Broth")) %>%
   pull(SampleID)
 
 # With 80% Transcriptional Coverage
-GoodSampleList80 <- All_pipeSummary %>%
+GoodSampleList80 <- my_pipeSummary %>%
   filter(N_Genomic >= 1000000 & Txn_Coverage_f >= 80) %>% 
   pull(SampleID2)
-SputumSampleList80 <- GoodSampleList80[grep("W", GoodSampleList80)]
-GoodSamples80_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList80)
+SputumSampleList80 <- GoodSampleList80[grep("W", GoodSampleList80)] # 45 as of Run3
+GoodSamples80_pipeSummary <- my_pipeSummary %>% filter(SampleID2 %in% GoodSampleList80)
 GoodSamples80_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList80))
 GoodSamples80_tpm <- All_tpm %>% select(all_of(GoodSampleList80))
 # GoodSamples80_tpmfbc <- All_tpm_f.bc %>% select(all_of(GoodSampleList80))
 
 # With 50% Transcriptional Coverage
-GoodSampleList50 <- All_pipeSummary %>%
+GoodSampleList50 <- my_pipeSummary %>%
   filter(N_Genomic >= 1000000 & Txn_Coverage_f >= 50) %>% 
   pull(SampleID2)
-SputumSampleList50 <- GoodSampleList50[grep("W", GoodSampleList50)]
+SputumSampleList50 <- GoodSampleList50[grep("W", GoodSampleList50)] # 56 as of Run3
 GoodSamples50_pipeSummary <- All_pipeSummary %>% filter(SampleID2 %in% GoodSampleList50)
 GoodSamples50_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList50))
 
 # Number of sputum samples with > 1 million reads
-All_pipeSummary %>%
+my_pipeSummary %>%
   filter(N_Genomic >= 1000000) %>% 
   filter(str_detect(SampleID, "W")) %>%
-  # filter(Week == "Week 0") %>% # 41
-  # filter(Week == "Week 2") %>% # 16
+  # filter(Week == "Week 0") %>% # 43
+  # filter(Week == "Week 2") %>% # 28
   nrow()
-# 57
+# 71
 
 # Number of sputum samples with > 80% Txn coverage
-All_pipeSummary %>%
+my_pipeSummary %>%
   filter(Txn_Coverage_f >= 80) %>% 
   filter(str_detect(SampleID, "W")) %>%
-  # filter(Week == "Week 0") %>% # 38
+  # filter(Week == "Week 0") %>% # 40
   # filter(Week == "Week 2") %>% # 5
   nrow()
-# 43
+# 45
 
 # Number of sputum samples with > 50% Txn coverage
-All_pipeSummary %>%
+my_pipeSummary %>%
   filter(Txn_Coverage_f >= 50) %>% 
   filter(str_detect(SampleID, "W")) %>%
   # filter(Week == "Week 0") %>% # 45
-  # filter(Week == "Week 2") %>% # 15
+  # filter(Week == "Week 2") %>% # 17
   nrow()
-# 43
+# 62
+
+# Number of sputum samples with > 1 million reads and >80% txn coverage
+my_pipeSummary %>%
+  filter(N_Genomic >= 1000000) %>% 
+  filter(Txn_Coverage_f >=80) %>%
+  filter(str_detect(SampleID, "W")) %>%
+  # filter(Week == "Week 0") %>% # 40
+  # filter(Week == "Week 2") %>% # 5
+  nrow()
+# 45

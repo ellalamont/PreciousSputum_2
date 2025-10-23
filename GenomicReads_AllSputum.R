@@ -2,7 +2,7 @@
 # E. Lamont
 # 10/13/25
 
-source("Import_data.R") # To get All_pipeSummary
+source("Import_data.R") # To get my_pipeSummary (duplicates are removed)
 
 # Plot basics
 my_plot_themes <- theme_bw() +
@@ -34,17 +34,18 @@ my_fav_shapes <- c(`W0 sputum (cure)` = 21, `W0 sputum (relapse)` = 21, `Broth`=
 
 
 ###########################################################
-####################### SUBSET DATA #######################
+################ GRAB JUST SPUTUM SAMPLES #################
 
-my_pipeSummary <- All_pipeSummary %>% filter(!Type2 %in% c("THP1 spiked", "Broth")) %>%
-  filter(Run != "PredictTB_Run2.5")
+sputum_pipeSummary <- my_pipeSummary %>% 
+  filter(!Type2 %in% c("THP1 spiked", "Broth"))
 
+## NOTE!: There is a treatment failure that is not being plotted here. Causes a warning message.
 
 ###########################################################
 ################ N_Genomic vs SAMPLE TYPE #################
 
 ### BOXPLOT ###
-N_Genomic_box1 <- my_pipeSummary %>% 
+N_Genomic_box1 <- sputum_pipeSummary %>% 
   ggplot(aes(x = Type, y = N_Genomic)) + 
   geom_boxplot(fill="grey", width = 0.6, outlier.size = 0.9, alpha = 0.2) + 
   geom_point(aes(fill = Type2, shape = Type2), alpha = 0.8, size = 1.7, position = position_jitter(0.2)) + 
@@ -53,21 +54,21 @@ N_Genomic_box1 <- my_pipeSummary %>%
   scale_fill_manual(values=my_fav_colors) +  
   geom_hline(yintercept = 1000000, linetype = "dashed", alpha = 0.5) + 
   # scale_y_continuous(limits = c(0,12000000), breaks = seq(0, 12000000, 2000000)) +
-  labs(title = "N_Genomic for all sputum",
+  labs(title = "N_Genomic for all sputum (Run1-3)",
     x = "Sample type", 
     y = "# reads aligning to Mtb") + 
   my_plot_themes
 N_Genomic_box1
-ggsave(N_Genomic_box1,
-       file = paste0("Sputum_N_Genomic_Box1.pdf"),
-       path = "Figures/GenomicRead_Analyses",
-       width = 6, height = 5, units = "in")
+# ggsave(N_Genomic_box1,
+#        file = paste0("Sputum_N_Genomic_Box1.pdf"),
+#        path = "Figures/GenomicRead_Analyses",
+#        width = 6, height = 5, units = "in")
 
 
 ###########################################################
 ################ P_Genomic vs SAMPLE TYPE #################
 
-P_Genomic_box1 <- my_pipeSummary %>% 
+P_Genomic_box1 <- sputum_pipeSummary %>% 
   ggplot(aes(x = Type, y = P_Genomic)) + 
   geom_boxplot(fill="grey", width = 0.6, outlier.size = 0.9, alpha = 0.2) + 
   geom_point(aes(fill = Type2, shape = Type2), alpha = 0.8, size = 1.7, position = position_jitter(0.2)) + 
@@ -75,21 +76,21 @@ P_Genomic_box1 <- my_pipeSummary %>%
   # geom_text_repel(aes(label = format(SampleID, big.mark = ",")), size= 2.5, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
   scale_fill_manual(values=my_fav_colors) +  
   scale_y_continuous(limits = c(0,100), breaks = seq(0, 100, 10)) + 
-  labs(title = "P_Genomic for all sputum",
+  labs(title = "P_Genomic for all sputum (Run1-3)",
     x = "Sample type", 
     y = "% reads aligning to Mtb") + 
   my_plot_themes
 P_Genomic_box1
-ggsave(P_Genomic_box1,
-       file = paste0("Sputum_P_Genomic_Box1.pdf"),
-       path = "Figures/GenomicRead_Analyses",
-       width = 6, height = 5, units = "in")
+# ggsave(P_Genomic_box1,
+#        file = paste0("Sputum_P_Genomic_Box1.pdf"),
+#        path = "Figures/GenomicRead_Analyses",
+#        width = 6, height = 5, units = "in")
 
 
 ###########################################################
 ############ AtLeast.10.Reads vs SAMPLE TYPE ##############
 
-TenReads_box1 <- my_pipeSummary %>% 
+TenReads_box1 <- sputum_pipeSummary %>% 
   ggplot(aes(x = Type, y = Txn_Coverage_f)) + 
   geom_boxplot(fill="grey", width = 0.6, outlier.size = 0.9, alpha = 0.2) + 
   geom_point(aes(fill = Type2, shape = Type2), alpha = 0.8, size = 2, position = position_jitter(0.2)) + 
@@ -99,16 +100,16 @@ TenReads_box1 <- my_pipeSummary %>%
   scale_y_continuous(limits = c(0,100.1), breaks = seq(0, 100.1, 10)) + 
   geom_hline(yintercept = 80, linetype = "dashed", alpha = 0.5) + 
   geom_hline(yintercept = 50, linetype = "dashed", alpha = 0.5) + 
-  labs(title = "Genes with >= 10 reads aligning for all sputum",
+  labs(title = "Genes with >= 10 reads aligning for all sputum (Run1-3)",
     # subtitle = "", 
     x = "Sample type", 
     y = "% transcriptional coverage") + 
   my_plot_themes
 TenReads_box1
-ggsave(TenReads_box1,
-       file = paste0("Sputum_TenReads_box1.pdf"),
-       path = "Figures/GenomicRead_Analyses",
-       width = 6, height = 5, units = "in")
+# ggsave(TenReads_box1,
+#        file = paste0("Sputum_TenReads_box1.pdf"),
+#        path = "Figures/GenomicRead_Analyses",
+#        width = 6, height = 5, units = "in")
 
 
 
