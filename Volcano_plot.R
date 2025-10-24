@@ -71,7 +71,7 @@ make_volcano_function_FDR <- function(my_df, graph_title, DE_limit) {
 
 
 
-single_plot <- make_volcano_function_DE2_FDR(list_dfs_f2[[1]], df_names[1], DE_limit = 2)
+single_plot <- make_volcano_function_FDR(list_dfs_f2[[1]], df_names[1], DE_limit = 2)
 single_plot
 # ggsave(single_plot,
 #        file = "GoodSputumSubset.ComparedTo.Broth_FilteredFDR_2.pdf",
@@ -82,7 +82,7 @@ single_plot
 my_path <- "Figures/Volcano/Log2Fold2_FDR"
 for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
   current_df_name <- df_names[i]
-  filename <- paste0(current_df_name, "_f_FDR.pdf")
+  filename <- paste0(current_df_name, "_f_FDR_Run1to3.pdf")
   my_plot <- make_volcano_function_FDR(list_dfs_f2[[i]], df_names[i], 2) ## USING FILTERED DATA ##
   ggsave(my_plot,
          file = filename,
@@ -93,7 +93,7 @@ for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
 my_path <- "Figures/Volcano/Log2Fold1_FDR"
 for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
   current_df_name <- df_names[i]
-  filename <- paste0(current_df_name, "_f_FDR.pdf")
+  filename <- paste0(current_df_name, "_f_FDR_Run1to3.pdf")
   my_plot <- make_volcano_function_FDR(list_dfs_f2[[i]], df_names[i], 1) ## USING FILTERED DATA ##
   ggsave(my_plot,
          file = filename,

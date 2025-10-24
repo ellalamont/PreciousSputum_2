@@ -1,6 +1,6 @@
 # iModulons gene sets comparisons
 # E. Lamont
-# 10/13/25
+# 10/24/25 Run1-3
 
 
 # Here the gene set enrichment analysis has already been done in Bob's meta way and I am just visualizing the result
@@ -85,18 +85,18 @@ W0CureVsRa_iModulons <- W0CureVsRa_iModulons %>%
   ))
 
 # Try making one bubble plot
-# test <- BubblePlot_Function(W0CureVsRa_iModulons, "Central Carbon")
-# test
+test <- BubblePlot_Function(W0CureVsRa_iModulons, "Central Carbon")
+test
 
 # Loop to save all categories
 my_path <- paste0("Figures/Bubbles/iModulons/", "W0CureVsRa_iModulons_all")
 
-for (cat in unique(W0CureVsRa_iModulons$iModulonCategory)) {
-  p <- BubblePlot_Function(W0CureVsRa_iModulons, cat)
-  ggsave(p,
-         file = paste0(deparse(substitute(W0CureVsRa_iModulons)), "_", cat, ".pdf"),
-         path = my_path,
-         width = 7.5, height = 6, units = "in")}
+# for (cat in unique(W0CureVsRa_iModulons$iModulonCategory)) {
+#   p <- BubblePlot_Function(W0CureVsRa_iModulons, cat)
+#   ggsave(p,
+#          file = paste0(deparse(substitute(W0CureVsRa_iModulons)), "_", cat, "Run1-3.pdf"),
+#          path = my_path,
+#          width = 7.5, height = 6, units = "in")}
 
 
 ###########################################################
@@ -133,12 +133,12 @@ W0RelapseVsW0Cure_iModulons <- MetaGeneSets_W0.relapse.ComparedTo.W0.cure %>%
 # Loop to save all categories
 my_path <- paste0("Figures/Bubbles/iModulons/", "W0RelapseVsW0Cure_iModulons", "_all")
 
-for (cat in unique(W0RelapseVsW0Cure_iModulons$iModulonCategory)) {
-  p <- BubblePlot_Function(W0RelapseVsW0Cure_iModulons, cat)
-  ggsave(p,
-         file = paste0(deparse(substitute(W0RelapseVsW0Cure_iModulons)), "_", cat, ".pdf"),
-         path = my_path,
-         width = 7.5, height = 6, units = "in")}
+# for (cat in unique(W0RelapseVsW0Cure_iModulons$iModulonCategory)) {
+#   p <- BubblePlot_Function(W0RelapseVsW0Cure_iModulons, cat)
+#   ggsave(p,
+#          file = paste0(deparse(substitute(W0RelapseVsW0Cure_iModulons)), "_", cat, "Run1-3.pdf"),
+#          path = my_path,
+#          width = 7.5, height = 6, units = "in")}
 
 
 ###########################################################
@@ -175,12 +175,12 @@ W2CureVsW0Cure_iModulons <- MetaGeneSets_W2.cure.ComparedTo.W0.cure %>%
 # Loop to save all categories
 my_path <- paste0("Figures/Bubbles/iModulons/", "W2CureVsW0Cure_iModulons", "_all")
 
-for (cat in unique(W2CureVsW0Cure_iModulons$iModulonCategory)) {
-  p <- BubblePlot_Function(W2CureVsW0Cure_iModulons, cat)
-  ggsave(p,
-         file = paste0(deparse(substitute(W2CureVsW0Cure_iModulons)), "_", cat, ".pdf"),
-         path = my_path,
-         width = 7.5, height = 6, units = "in")}
+# for (cat in unique(W2CureVsW0Cure_iModulons$iModulonCategory)) {
+#   p <- BubblePlot_Function(W2CureVsW0Cure_iModulons, cat)
+#   ggsave(p,
+#          file = paste0(deparse(substitute(W2CureVsW0Cure_iModulons)), "_", cat, "Run1-3.pdf"),
+#          path = my_path,
+#          width = 7.5, height = 6, units = "in")}
 
 
 ###########################################################
@@ -217,12 +217,12 @@ W0RelapseVsRa_iModulons <- MetaGeneSets_W0.relapse.ComparedTo.Ra %>%
 # Loop to save all categories
 my_path <- paste0("Figures/Bubbles/iModulons/", "W0RelapseVsRa_iModulons", "_all")
 
-for (cat in unique(W0RelapseVsRa_iModulons$iModulonCategory)) {
-  p <- BubblePlot_Function(W0RelapseVsRa_iModulons, cat)
-  ggsave(p,
-         file = paste0(deparse(substitute(W0RelapseVsRa_iModulons)), "_", cat, ".pdf"),
-         path = my_path,
-         width = 7.5, height = 6, units = "in")}
+# for (cat in unique(W0RelapseVsRa_iModulons$iModulonCategory)) {
+#   p <- BubblePlot_Function(W0RelapseVsRa_iModulons, cat)
+#   ggsave(p,
+#          file = paste0(deparse(substitute(W0RelapseVsRa_iModulons)), "_", cat, "Run1-3.pdf"),
+#          path = my_path,
+#          width = 7.5, height = 6, units = "in")}
 
 ###########################################################
 ###################### W2 Cure Vs Ra ######################
@@ -258,12 +258,12 @@ W2CureVsRa_iModulons <- MetaGeneSets_W2.cure.ComparedTo.Ra %>%
 # Loop to save all categories
 my_path <- paste0("Figures/Bubbles/iModulons/", "W2CureVsRa_iModulons", "_all")
 
-for (cat in unique(W2CureVsRa_iModulons$iModulonCategory)) {
-  p <- BubblePlot_Function(W2CureVsRa_iModulons, cat)
-  ggsave(p,
-         file = paste0(deparse(substitute(W2CureVsRa_iModulons)), "_", cat, ".pdf"),
-         path = my_path,
-         width = 7.5, height = 6, units = "in")}
+# for (cat in unique(W2CureVsRa_iModulons$iModulonCategory)) {
+#   p <- BubblePlot_Function(W2CureVsRa_iModulons, cat)
+#   ggsave(p,
+#          file = paste0(deparse(substitute(W2CureVsRa_iModulons)), "_", cat, "Run1-3.pdf"),
+#          path = my_path,
+#          width = 7.5, height = 6, units = "in")}
 
 
 

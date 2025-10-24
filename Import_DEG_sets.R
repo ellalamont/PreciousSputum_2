@@ -92,5 +92,5 @@ for (i in 1:length(list_dfs_f)) {
 `MetaGeneSets_W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W2.cure_vs_Ra/W2_cure.MTb.MetaGeneSets.UP.txt")
 
 # Specific gene sets I made
-TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure_TAR/W2_cure.MTb.MetaGeneSets.UP.txt")
-
+TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/TAR_W2_cure.MTb.MetaGeneSets.UP.txt")
+EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/EllaGeneSets_2025.10.24_W2_cure.MTb.MetaGeneSets.UP.txt")

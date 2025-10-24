@@ -27,6 +27,7 @@ allGeneSetList <- lapply(allGeneSetList, function(gset) {
 })
 
 
+
 ###########################################################
 ################# TO MAKE NEW GENE SETS ###################
 
@@ -41,6 +42,9 @@ allGeneSetList <- lapply(allGeneSetList, function(gset) {
 # SAVE AS RDA FOR LATER 
 # save(allGeneSets, file = "Data/GeneSet_Data/XXXGeneSets.rda")
 
+# EllaGeneSets_2025.10.24 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.10.24.csv")
+# allGeneSets <- split(EllaGeneSets_2025.10.24$Gene, EllaGeneSets_2025.10.24$GeneSet)
+# save(allGeneSets, file = "Data/GeneSet_Data/EllaGeneSets_2025.10.24.rda")
 
 ###########################################################
 ############ iMODULONS: MAKE LISTS OF GROUPS ##############
@@ -83,14 +87,45 @@ Virulence.Persistence_iModulons_pattern <- str_c(Virulence.Persistence_iModulons
 ################### DOWNLOAD GENE SETS ####################
 
 # allGeneSetList$MTb.iModulons
-# 
-# iModulons_df <- as.data.frame(allGeneSetList$MTb.iModulons)  
-# # write.csv(iModulons_df, file = "iModulons_GeneSets.csv")
-# 
+
+# iModulons_df <- as.data.frame(allGeneSetList$MTb.iModulons)
+# write.csv(iModulons_df, file = "iModulons_GeneSets.csv")
+
 # iModulons_df <- data.frame(
 #   iModulon = names(allGeneSetList$MTb.iModulons),
 #   genes = sapply(allGeneSetList$MTb.iModulons, paste, collapse = ", ")
 # )
-# 
+# # 
 # write.csv(iModulons_df, file = "Data/iModulons_GeneSets_2.csv", row.names = FALSE)
+
+# iModulons_df2 <- iModulons_df %>% separate_longer_delim(genes, delim = ", ") %>%
+#   rename(GeneSet = iModulon, Gene = genes) %>%
+#   mutate(Reference = "iModulons") %>% 
+#   mutate(iModulonCategory = case_when(
+#     str_detect(GeneSet, CentralCarbon_iModulons_pattern) ~ "Central Carbon",
+#     str_detect(GeneSet, AminoAcid_iModulons_pattern) ~ "Amino Acid",
+#     str_detect(GeneSet, NucleicAcid_iModulons_pattern) ~ "Nucleic Acid",
+#     str_detect(GeneSet, FattyAcid.Cholesterol_iModulons_pattern) ~ "Fatty Acid_Cholesterol",
+#     str_detect(GeneSet, Metal_iModulons_pattern) ~ "Metal",
+#     str_detect(GeneSet, SulfurMetabolism_iModulons_pattern) ~ "Sulfur",
+#     str_detect(GeneSet, Growth_iModulons_pattern) ~ "Growth",
+#     str_detect(GeneSet, Redox_iModulons_pattern) ~ "Redox",
+#     str_detect(GeneSet, AcidStress_iModulons_pattern) ~ "Acid Stress",
+#     str_detect(GeneSet, Antibiotic_iModulons_pattern) ~ "Antibiotic",
+#     str_detect(GeneSet, Virulence.Persistence_iModulons_pattern) ~ "Virulence_Persistence",
+#     TRUE ~ "Other"
+#   ))
+
+# write.csv(iModulons_df2, file = "Data/GeneSet_Data/iModulons_GeneSets.csv", row.names = FALSE)
+
+
+# Walter2015_GeneSets <- data.frame(
+#   GeneSet = names(allGeneSetList$Walter2015GeneSets),
+#   Gene = sapply(allGeneSetList$Walter2015GeneSets, paste, collapse = ", ")) %>%
+#   separate_longer_delim(Gene, delim = ", ") %>%
+#   mutate(Reference = "Walter2015")
+# write.csv(Walter2015_GeneSets, file = "Data/GeneSet_Data/Walter2015_GeneSets.csv", row.names = FALSE)
+
+
+
 

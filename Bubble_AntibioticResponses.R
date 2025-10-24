@@ -1,4 +1,4 @@
-# Compare gene sets invovled in antibiotic responses
+# Compare gene sets involved in antibiotic responses
 # E. Lamont
 # 10/13/25
 
@@ -18,7 +18,7 @@ my_plot_themes <- theme_bw() +
         legend.title = element_text(size = 10),
         plot.title = element_text(size=10), 
         axis.title.x = element_text(size=10), 
-        axis.text.x = element_text(angle = 0, size=7, vjust=0, hjust=0.5),
+        axis.text.x = element_text(angle = 0, size=10, vjust=0, hjust=0.5),
         # axis.text.x = element_text(angle = 45, size=7, vjust=1, hjust=1),
         axis.title.y = element_text(size=10),
         axis.text.y = element_text(size=10), 
@@ -60,7 +60,7 @@ my_bubblePlot <- W2CureVsW0Cure_TAR %>%
   guides(shape = "none") + 
   scale_x_continuous(limits = c(-3, 3), breaks = seq(-3, 3, 1)) + 
   geom_vline(xintercept = 0) + 
-  labs(title = "W2CureVsW0Cure_TAR", y = NULL, x = "Log2Fold change") + 
+  labs(title = "W2CureVsW0Cure_TAR (Run1-3)", y = NULL, x = "Log2Fold change") + 
   my_plot_themes + facet_themes + theme(legend.position = "none")
 my_bubblePlot
 ggsave(my_bubblePlot,
