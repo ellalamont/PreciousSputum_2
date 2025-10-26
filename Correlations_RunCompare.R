@@ -36,6 +36,21 @@ All_tpmf_Log10 <- All_tpm_f %>%
 # Make Gene a column
 All_tpmf_Log10 <- All_tpmf_Log10 %>% rownames_to_column("Gene")
 
+
+###########################################################
+######################## RAW READS ########################
+
+# Genes have been filtered to keep only protein coding Rv genes
+
+# Log10 transform the data
+All_RawReadsf_Log10 <- All_RawReads_f %>% 
+  mutate(across(where(is.numeric), ~ .x + 1)) %>% # Add 1 to all the values
+  mutate(across(where(is.numeric), ~ log10(.x))) # Log transform the values
+
+# Make Gene a column
+All_RawReadsf_Log10 <- All_RawReadsf_Log10 %>% rename(Gene = X)
+
+
 ###########################################################
 ############### TPM_F THP1 RUN1 vs RUN2 ###################
 
@@ -190,18 +205,6 @@ ScatterCorr
 #        width = 7, height = 5, units = "in")
 
 
-###########################################################
-######################## RAW READS ########################
-
-# Genes have been filtered to keep only protein coding Rv genes
-
-# Log10 transform the data
-All_RawReadsf_Log10 <- All_RawReads_f %>% 
-  mutate(across(where(is.numeric), ~ .x + 1)) %>% # Add 1 to all the values
-  mutate(across(where(is.numeric), ~ log10(.x))) # Log transform the values
-
-# Make Gene a column
-All_RawReadsf_Log10 <- All_RawReadsf_Log10 %>% rename(Gene = X)
 
 
 ###########################################################
@@ -275,4 +278,226 @@ ScatterCorr
 #        file = paste0("W0_14136_Compare.Run1_Run2_RawReadsf.pdf"),
 #        path = "Figures/Correlations_RunCompare",
 #        width = 7, height = 5, units = "in")
+
+###########################################################
+############### W0_13026 TPM_F + RAW READS ################
+
+Sample1 <- "Run1_W0_13026" 
+Sample2 <- "Run3_W0_13026" 
+
+ScatterCorr <- All_tpmf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "tpm_f; Pearson correlation",
+       x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W0_13026_CompareRuns_tpmf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+ScatterCorr <- All_RawReadsf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "Raw Reads_f, Pearson correlation",
+       x = paste0("Log10(RawReads+1) ", Sample1), y = paste0("Log10(RawReads+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W0_13026_CompareRuns_RawReadsf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+
+###########################################################
+############### W2_11058 TPM_F + RAW READS ################
+
+Sample1 <- "Run3_W2_11058" 
+Sample2 <- "Run2_W2_11058" 
+
+ScatterCorr <- All_tpmf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "tpm_f; Pearson correlation",
+       x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W2_11058_CompareRuns_tpmf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+ScatterCorr <- All_RawReadsf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "Raw Reads_f, Pearson correlation",
+       x = paste0("Log10(RawReads+1) ", Sample1), y = paste0("Log10(RawReads+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W2_11058_CompareRuns_RawReadsf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+###########################################################
+############### W2_12010 TPM_F + RAW READS ################
+
+Sample1 <- "Run2_W2_12010" 
+Sample2 <- "Run3_W2_12010" 
+
+ScatterCorr <- All_tpmf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "tpm_f; Pearson correlation",
+       x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W2_12010_CompareRuns_tpmf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+ScatterCorr <- All_RawReadsf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "Raw Reads_f, Pearson correlation",
+       x = paste0("Log10(RawReads+1) ", Sample1), y = paste0("Log10(RawReads+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W2_12010_CompareRuns_RawReadsf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+###########################################################
+############### W2_12029 TPM_F + RAW READS ################
+
+Sample1 <- "Run3_W2_12029" 
+Sample2 <- "Run2_W2_12029" 
+
+ScatterCorr <- All_tpmf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "tpm_f; Pearson correlation",
+       x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W2_12029_CompareRuns_tpmf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+ScatterCorr <- All_RawReadsf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "Raw Reads_f, Pearson correlation",
+       x = paste0("Log10(RawReads+1) ", Sample1), y = paste0("Log10(RawReads+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W2_12029_CompareRuns_RawReadsf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+###########################################################
+############### W2_15017 TPM_F + RAW READS ################
+
+Sample1 <- "Run3_W2_15017" 
+Sample2 <- "Run2_W2_15017" 
+
+ScatterCorr <- All_tpmf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "tpm_f; Pearson correlation",
+       x = paste0("Log10(TPM+1) ", Sample1), y = paste0("Log10(TPM+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W2_15017_CompareRuns_tpmf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
+ScatterCorr <- All_RawReadsf_Log10 %>% 
+  ggplot(aes(x = .data[[Sample1]], y = .data[[Sample2]])) + 
+  geom_point(aes(text = Gene), alpha = 0.7, size = 2, color = "black") +
+  geom_abline(slope = 1, intercept = 0, linetype = "solid", color = "blue") + 
+  # geom_text_repel(aes(label = Gene), size= 0.5, max.overlaps = 3) + 
+  geom_text(aes(label = Gene), size = 2, vjust = -0.5, hjust = 0.5, check_overlap = T) +  
+  labs(title = paste0("Sputum sample sequenced on two separate runs (different capture)"),
+       subtitle = "Raw Reads_f, Pearson correlation",
+       x = paste0("Log10(RawReads+1) ", Sample1), y = paste0("Log10(RawReads+1) ", Sample2)) + 
+  stat_cor(method="pearson") + # add a correlation to the plot
+  # scale_x_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
+  my_plot_themes
+ScatterCorr
+# ggsave(ScatterCorr,
+#        file = paste0("W2_15017_CompareRuns_RawReadsf.pdf"),
+#        path = "Figures/Correlations_RunCompare",
+#        width = 7, height = 5, units = "in")
+
 

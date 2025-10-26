@@ -37,9 +37,9 @@ my_fav_shapes <- c(`W0 sputum (cure)` = 21, `W0 sputum (relapse)` = 21, `Broth`=
 ################ GRAB JUST SPUTUM SAMPLES #################
 
 sputum_pipeSummary <- my_pipeSummary %>% 
-  filter(!Type2 %in% c("THP1 spiked", "Broth"))
+  filter(!Type2 %in% c("THP1 spiked", "Broth", "W2 sputum (failure)"))
 
-## NOTE!: There is a treatment failure that is not being plotted here. Causes a warning message.
+## NOTE!: There is a treatment failure that is not being plotted here. Causes a warning message. Removed it above
 
 ###########################################################
 ################ N_Genomic vs SAMPLE TYPE #################
@@ -96,7 +96,7 @@ TenReads_box1 <- sputum_pipeSummary %>%
   geom_point(aes(fill = Type2, shape = Type2), alpha = 0.8, size = 2, position = position_jitter(0.2)) + 
   scale_shape_manual(values = my_fav_shapes) + 
   scale_fill_manual(values=my_fav_colors) +  
-  # geom_text_repel(aes(label = format(SampleID, big.mark = ",")), size= 2.5, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  # geom_text_repel(aes(label = format(SampleID, big.mark = ",")), size= 2, box.padding = 0.4, segment.color = "black", max.overlaps = Inf) + 
   scale_y_continuous(limits = c(0,100.1), breaks = seq(0, 100.1, 10)) + 
   geom_hline(yintercept = 80, linetype = "dashed", alpha = 0.5) + 
   geom_hline(yintercept = 50, linetype = "dashed", alpha = 0.5) + 

@@ -74,7 +74,7 @@ PCA_fig <- my_PCA_df %>%
   # geom_text_repel(aes(label = Lineage), size = 2.5) + 
   scale_fill_manual(values = my_fav_colors) +  
   scale_shape_manual(values = my_fav_shapes) + 
-  # geom_text_repel(aes(label = Run), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  geom_text_repel(aes(label = Arm), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
   labs(title = "PCA: >1M reads and >80% genes with at least 10 reads (Run1-3)",
        subtitle = "TPM filtered (Rv genes only)",
        x = paste0("PC1: ", summary_PCA[1,1], "%"),
@@ -118,9 +118,9 @@ my_PCA <- prcomp(my_tpm_t2, scale = TRUE)
 # See the % Variance explained
 summary(my_PCA)
 summary_PCA <- format(round(as.data.frame(summary(my_PCA)[["importance"]]['Proportion of Variance',]) * 100, digits = 1), nsmall = 1) # format and round used to control the digits after the decimal place
-summary_PCA[1,1] # PC1 explains 15.3% of variance
-summary_PCA[2,1] # PC2 explains 8.5% of variance
-summary_PCA[3,1] # PC3 explains 7.1% of variance
+summary_PCA[1,1] # PC1 explains 15.2% of variance
+summary_PCA[2,1] # PC2 explains 8.7% of variance
+summary_PCA[3,1] # PC3 explains 7.3% of variance
 
 # MAKE PCA PLOT with GGPLOT 
 my_PCA_df <- as.data.frame(my_PCA$x[, 1:3]) # Extract the first 3 PCs
@@ -133,7 +133,7 @@ PCA_fig <- my_PCA_df %>%
   # geom_text_repel(aes(label = Lineage), size = 2.5) + 
   scale_fill_manual(values = my_fav_colors) +  
   scale_shape_manual(values = my_fav_shapes) + 
-  geom_text_repel(aes(label = Txn_Coverage_f), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  geom_text_repel(aes(label = Arm), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
   labs(title = "PCA: >1M reads and >50% genes with at least 10 reads (Run1-3)",
        subtitle = "TPM filtered (Rv genes only). Far out W2 is Run2_W2_12073",
        x = paste0("PC1: ", summary_PCA[1,1], "%"),
@@ -228,7 +228,7 @@ PCA_fig <- my_PCA_df %>%
   # geom_text_repel(aes(label = Lineage), size = 2.5) + 
   scale_fill_manual(values = my_fav_colors) +  
   scale_shape_manual(values = my_fav_shapes) + 
-  geom_text_repel(aes(label = Patient), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  geom_text_repel(aes(label = Arm), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
   labs(title = "PCA: >1M reads and >80% genes with at least 10 reads",
        subtitle = "TPM filtered, batch corrected",
        x = paste0("PC1: ", summary_PCA[1,1], "%"),
