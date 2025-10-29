@@ -54,13 +54,14 @@ N_Genomic_box1 <- sputum_pipeSummary %>%
   scale_fill_manual(values=my_fav_colors) +  
   geom_hline(yintercept = 1000000, linetype = "dashed", alpha = 0.5) + 
   # scale_y_continuous(limits = c(0,12000000), breaks = seq(0, 12000000, 2000000)) +
+  scale_y_continuous(trans='log10') + 
   labs(title = "N_Genomic for all sputum (Run1-3)",
     x = "Sample type", 
     y = "# reads aligning to Mtb") + 
   my_plot_themes
 N_Genomic_box1
 # ggsave(N_Genomic_box1,
-#        file = paste0("Sputum_N_Genomic_Box1.pdf"),
+#        file = paste0("Sputum_N_Genomic_Box_v2.pdf"),
 #        path = "Figures/GenomicRead_Analyses",
 #        width = 6, height = 5, units = "in")
 

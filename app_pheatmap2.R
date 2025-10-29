@@ -28,6 +28,10 @@ my_annotation_colors <- list(
 
 my_tpm <- GoodSamples80_tpmf %>% select(-contains("THP1"))
 
+my_pipeSummary <- GoodSamples80_pipeSummary %>% mutate(Week = case_when(Week == "Week 0" ~ "W0",
+                                                                         Week == "Week 2" ~ "W2",
+                                                                         is.na(Week) ~ "Broth"))
+
 # Define UI ----
 ui <- fluidPage(
   titlePanel("Sputum Pheatmap"),
@@ -171,7 +175,7 @@ server <- function(input, output, session) {
     
   
     p <- pheatmap(my_data, 
-                  annotation_col = All_pipeSummary["Week"], 
+                  annotation_col = my_pipeSummary["Week"], 
                   annotation_colors = my_annotation_colors,
                   # col = colorRampPalette(c("navy", "white", "firebrick3"))(50),
                   scale = input$my_scaling, 

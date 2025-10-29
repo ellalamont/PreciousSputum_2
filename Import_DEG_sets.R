@@ -16,6 +16,13 @@ source("Import_data.R")
 `W0.relapse.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.relapse_vs_Ra/W0_relapse.MTb.Meta.JOINED.txt")
 `W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W2.cure_vs_Ra/W2_cure.MTb.Meta.JOINED.txt")
 
+# Comparing the same sample run twice
+W0_13051_Compare <- read.delim("Data/Differential_Expression_Run1to3/W0_13051/W0_13051_S42.MTb.Meta.JOINED.txt")
+W2_11058_Compare <- read.delim("Data/Differential_Expression_Run1to3/W2_11058/W2_11058_S31.MTb.Meta.JOINED.txt")
+W2_12010_Compare <- read.delim("Data/Differential_Expression_Run1to3/W2_12010/W2_12010_S33.MTb.Meta.JOINED.txt")
+W2_12043_Compare <- read.delim("Data/Differential_Expression_Run1to3/W2_12043/W2_12043_S25.MTb.Meta.JOINED.txt")
+W2_13026_Compare <- read.delim("Data/Differential_Expression_Run1to3/W2_13026/W2_13026_S25.MTb.Meta.JOINED.txt")
+THP1_1e6_Compare <- read.delim("Data/Differential_Expression_Run1to3/THP1_1e6/THP1_1e6_1_S67.MTb.Meta.JOINED.txt")
 
 
 ###########################################################
@@ -24,14 +31,28 @@ list_dfs <- list(`W0.cure.ComparedTo.Ra`,
                  `W0.relapse.ComparedTo.W0.cure`, 
                  `W2.cure.ComparedTo.W0.cure`, 
                  `W0.relapse.ComparedTo.Ra`,
-                 `W2.cure.ComparedTo.Ra`)
+                 `W2.cure.ComparedTo.Ra`,
+                 
+                 W0_13051_Compare,
+                 W2_11058_Compare, 
+                 W2_12010_Compare,
+                 W2_12043_Compare,
+                 W2_13026_Compare,
+                 THP1_1e6_Compare)
 
 # Make a list of the names
 df_names <- c("W0.cure.ComparedTo.Ra",
               "W0.relapse.ComparedTo.W0.cure", 
               "W2.cure.ComparedTo.W0.cure", 
               "W0.relapse.ComparedTo.Ra",
-              "W2.cure.ComparedTo.Ra")
+              "W2.cure.ComparedTo.Ra",
+              
+              "W0_13051_Compare",
+              "W2_11058_Compare", 
+              "W2_12010_Compare",
+              "W2_12043_Compare",
+              "W2_13026_Compare",
+              "THP1_1e6_Compare")
 
 # Give the df list the correct df names
 names(list_dfs) <- df_names
@@ -99,3 +120,4 @@ for (i in 1:length(list_dfs_f)) {
 # Specific gene sets I made
 TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/TAR_W2_cure.MTb.MetaGeneSets.UP.txt")
 EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/EllaGeneSets_2025.10.24_W2_cure.MTb.MetaGeneSets.UP.txt")
+
