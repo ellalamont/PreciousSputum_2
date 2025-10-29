@@ -12,33 +12,16 @@ source("Import_data.R")
 ###########################################################
 ###################### PROCESS DATA #######################
 
-
 my_tpm <- GoodSamples80_tpmf %>% select(-contains("THP1"))
-
-
-# Filter so there are fewer genes to deal with right now
-# Lets filter for 300 just so it's easier for right now!
-my_tpm_filtered300 <- my_tpm %>%
-  filter(if_all(where(is.numeric), ~ .x >= 300))
-
-my_annotation_colors <- list(
-  Type2 = c("W0 sputum (cure)" = "#0072B2",
-            "W0 sputum (relapse)" = "red", 
-            "W2 sputum (cure)" = "green4",
-            "W2 sputum (relapse)" = "#6A3D9A", 
-            "Broth" = "#999999")
-)
 
 ###########################################################
 ######################## PHEATMAP #########################
 
 # pheatmap(All_tpm_matrix[1:10,], scale = "row")
 
-testing <- my_tpm_filtered300 %>% subset(rownames(my_tpm_filtered300) %in% allGeneSetList[["MTb.TB.Phenotypes.TopGeneSets"]][["human_sputum: top 25 genes"]]) # Guess this doesn't need to be a matrix
+testing <- my_tpm %>% subset(rownames(my_tpm) %in% allGeneSetList[["MTb.TB.Phenotypes.TopGeneSets"]][["human_sputum: top 25 genes"]]) # Guess this doesn't need to be a matrix
 
 # pheatmap(testing, scale = "row")
-
-
 
 # Grab the columns needed to give colors
 Color_annotation_df <- GoodSamples80_pipeSummary %>%
@@ -53,65 +36,18 @@ Color_annotation_df <- Color_annotation_df[colnames(testing), , drop = FALSE]
 my_annotation_colors <- list(
   Type2 = c("W0 sputum (cure)" = "#0072B2",
             "W0 sputum (relapse)" = "red", 
-            "Caseum mimic" = "green4",
-            "Marmoset" = "#6A3D9A", 
-            "Rabbit" = "#E69F00", 
+            "W2 sputum (cure)" = "green4",
+            "W2 sputum (relapse)" = "#6A3D9A", 
             "Broth" = "#999999")
 )
 
-pheatmap(my_tpm_filtered300, 
-         # annotation_col = annotation_df, 
-         # annotation_colors = my_annotation_colors,
-         scale = "row")
-
-
-
-
-
-###########################################################
-######################## ALL DATA #########################
-
-pheatmap(All_tpm2, 
-         annotation_col = annotation_df, 
-         annotation_colors = my_annotation_colors,
-         scale = "row")
-
-
-All_tpm3 <- All_tpm2[rowSums(All_tpm2 == 0) != ncol(All_tpm2), ]
-
-All_tpm3_matrix <- All_tpm3 %>% 
-  # rename("W0_250754" = "S_250754",
-  #        "W0_355466" = "S_355466",
-  #        "W0_503557" = "S_503557",
-  #        "W2_503937" = "S_503937",
-  #        "W2_575533" = "S_575533_MtbrRNA",
-  #        "W2_577208" = "S_577208") %>%
-  as.matrix()
-
-
-###########################################################
-############### ALL DATA WITH CLUSTERING ##################
-# https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
-
-# Grab the columns needed to give colors
-Color_annotation_df <- pipeSummary_3 %>%
-  filter(SampleID %in% colnames(All_tpm3)) %>%
-  select(SampleID, Type2) %>%
-  column_to_rownames("SampleID")
-
-# Reorder annotation rows to match columns of tpm file
-Color_annotation_df <- Color_annotation_df[colnames(All_tpm3), , drop = FALSE]
-
-
-
-heatmap_all <- pheatmap(All_tpm3_matrix, 
+pheatmap(testing, 
          annotation_col = Color_annotation_df, 
          annotation_colors = my_annotation_colors,
-         scale = "row")
-ggsave(heatmap_all,
-       file = "heatmap_all_1.pdf",
-       path = "Figures/Heatmaps",
-       width = 20, height = 20, units = "in")
+         scale = "row",
+         cutree_cols = 5)
+
+
 
 
 
