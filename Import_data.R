@@ -91,8 +91,8 @@ All_pipeSummary <- All_pipeSummary %>%
   mutate(Type = coalesce(Type, Sample_Type)) %>%
   mutate(Type2 = coalesce(Type2, Sample_Type)) %>% 
   mutate(Type2 = str_replace(Type2, "^THP1$", "THP1 spiked")) %>% 
-  select(-Sample_Type) %>%
-  select(-c(N_Splice, P_Splice, Replicate, RT, CFU_per_g, CFU_per_mL, Ra_cells, EukrRNADep, Hyb_Time, Probe, Probe_ng, Pooled_Set, X, mRNA_ng, ct, ttd)) %>%
+  dplyr::select(-Sample_Type) %>%
+  dplyr::select(-c(N_Splice, P_Splice, Replicate, RT, CFU_per_g, CFU_per_mL, Ra_cells, EukrRNADep, Hyb_Time, Probe, Probe_ng, Pooled_Set, X, mRNA_ng, ct, ttd)) %>%
   filter(SampleID != "Undetermined_S0")
 
 # Make a second SampleID column
@@ -111,29 +111,29 @@ All_pipeSummary <- All_pipeSummary %>%
 
 Run1_tpm <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.TPM.csv")
 Run1_tpm <- Run1_tpm %>% 
-  select(X, THP1_1e6_1_S67, contains("W")) %>%
+  dplyr::select(X, THP1_1e6_1_S67, contains("W")) %>%
   rename_with(~ paste0("Run1_", .), -X) # Add Run1 to the beginning of every column because some have the same name
 
 # Just pull the tpm of the THP1 spiked from another run: THP1 1e6_1 (Predict rack 2 box 1 I04)
 # Need THP1 1e6_1a from the Januaray run. Also need 
 ProbeTest5_tpm <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.TPM_moreTrim.csv") 
 ProbeTest5_tpm_Broth <- ProbeTest5_tpm %>% 
-  select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9, THP1_1e6_1a_S28) %>%
+  dplyr::select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9, THP1_1e6_1a_S28) %>%
   rename_with(~ paste0("ProbeTest5_", .), -X) 
 
 Run2_tpm <- read.csv("Data/PredictTB_Run2/Mtb.Expression.Gene.Data.TPM.csv")
 Run2_tpm <- Run2_tpm %>% 
-  select(-contains("Undetermined")) %>% 
+  dplyr::select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run2_", .), -X) 
 
 Run2.5_tpm <- read.csv("Data/PredictTB_Run2_5/Mtb.Expression.Gene.Data.TPM.csv")
 Run2.5_tpm <- Run2.5_tpm %>% 
-  select(-contains("Undetermined")) %>% 
+  dplyr::select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run2.5_", .), -X) 
 
 Run3_tpm <- read.csv("Data/PredictTB_Run3/Mtb.Expression.Gene.Data.TPM.csv")
 Run3_tpm <- Run3_tpm %>% 
-  select(-contains("Undetermined")) %>% 
+  dplyr::select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run3_", .), -X) 
 
 All_tpm <- merge(Run1_tpm, ProbeTest5_tpm_Broth, all = T)
@@ -150,28 +150,28 @@ names(All_tpm) <- gsub(x = names(All_tpm), pattern = "_S.*", replacement = "") #
 
 Run1_RawReads <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.readsM.csv")
 Run1_RawReads <- Run1_RawReads %>% 
-  select(X, THP1_1e6_1_S67, contains("W")) %>%
-  select(-contains("NoRT")) %>%
+  dplyr::select(X, THP1_1e6_1_S67, contains("W")) %>%
+  dplyr::select(-contains("NoRT")) %>%
   rename_with(~ paste0("Run1_", .), -X) # Add Run1 to the beginning of every column because some have the same name
 
 ProbeTest5_RawReads <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.readsM_moreTrim.csv")
 ProbeTest5_RawReads_Broth <- ProbeTest5_RawReads %>% 
-  select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9, THP1_1e6_1a_S28) %>%
+  dplyr::select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9, THP1_1e6_1a_S28) %>%
   rename_with(~ paste0("ProbeTest5_", .), -X) 
 
 Run2_RawReads <- read.csv("Data/PredictTB_Run2/Mtb.Expression.Gene.Data.readsM.csv")
 Run2_RawReads <- Run2_RawReads %>% 
-  select(-contains("Undetermined")) %>% 
+  dplyr::select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run2_", .), -X) 
 
 Run2.5_RawReads <- read.csv("Data/PredictTB_Run2_5/Mtb.Expression.Gene.Data.readsM.csv")
 Run2.5_RawReads <- Run2.5_RawReads %>% 
-  select(-contains("Undetermined")) %>% 
+  dplyr::select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run2.5_", .), -X) 
 
 Run3_RawReads <- read.csv("Data/PredictTB_Run3/Mtb.Expression.Gene.Data.readsM.csv")
 Run3_RawReads <- Run3_RawReads %>% 
-  select(-contains("Undetermined")) %>% 
+  dplyr::select(-contains("Undetermined")) %>% 
   rename_with(~ paste0("Run3_", .), -X) 
   
 
@@ -185,7 +185,7 @@ All_RawReads <- merge(All_RawReads, Run3_RawReads)
 names(All_RawReads) = gsub(pattern = "_S[0-9]+$", replacement = "", x = names(All_RawReads))
 
 # # Just keep the samples passing filter
-# All_RawReads <- All_RawReads %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
+# All_RawReads <- All_RawReads %>% dplyr::select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
 # 
 # 
 # 
@@ -274,9 +274,10 @@ GoodSampleList80 <- my_pipeSummary %>%
   pull(SampleID2)
 SputumSampleList80 <- GoodSampleList80[grep("W", GoodSampleList80)] # 45 as of Run3
 GoodSamples80_pipeSummary <- my_pipeSummary %>% filter(SampleID2 %in% GoodSampleList80)
-GoodSamples80_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList80))
-GoodSamples80_tpm <- All_tpm %>% select(all_of(GoodSampleList80))
-# GoodSamples80_tpmfbc <- All_tpm_f.bc %>% select(all_of(GoodSampleList80))
+GoodSamples80_tpmf <- All_tpm_f %>% dplyr::select(all_of(GoodSampleList80))
+GoodSamples80_tpm <- All_tpm %>% dplyr::select(all_of(GoodSampleList80))
+GoodSamples80_RawReadsf <- All_RawReads_f %>% dplyr::select(X, all_of(GoodSampleList80))
+# GoodSamples80_tpmfbc <- All_tpm_f.bc %>% dplyr::select(all_of(GoodSampleList80))
 
 # With 50% Transcriptional Coverage
 GoodSampleList50 <- my_pipeSummary %>%
@@ -284,7 +285,7 @@ GoodSampleList50 <- my_pipeSummary %>%
   pull(SampleID2)
 SputumSampleList50 <- GoodSampleList50[grep("W", GoodSampleList50)] # 56 as of Run3
 GoodSamples50_pipeSummary <- my_pipeSummary %>% filter(SampleID2 %in% GoodSampleList50)
-GoodSamples50_tpmf <- All_tpm_f %>% select(all_of(GoodSampleList50))
+GoodSamples50_tpmf <- All_tpm_f %>% dplyr::select(all_of(GoodSampleList50))
 
 # Number of sputum samples with > 1 million reads
 my_pipeSummary %>%
@@ -340,3 +341,4 @@ my_pipeSummary %>%
   # filter(Type2 == "W2 sputum (relapse)") %>% #4
   nrow()
 # 55
+

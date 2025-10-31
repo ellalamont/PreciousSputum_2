@@ -24,13 +24,13 @@ testing <- my_tpm %>% subset(rownames(my_tpm) %in% allGeneSetList[["MTb.TB.Pheno
 # pheatmap(testing, scale = "row")
 
 # Grab the columns needed to give colors
-Color_annotation_df <- GoodSamples80_pipeSummary %>%
+my_pipeSummary <- GoodSamples80_pipeSummary %>%
   filter(SampleID2 %in% colnames(testing)) %>%
   select(SampleID2, Type2) %>%
   column_to_rownames("SampleID2")
 
 # Reorder annotation rows to match columns of tpm file
-Color_annotation_df <- Color_annotation_df[colnames(testing), , drop = FALSE]
+my_pipeSummary <- my_pipeSummary[colnames(testing), , drop = FALSE]
 
 # Define the colors
 my_annotation_colors <- list(
@@ -42,12 +42,16 @@ my_annotation_colors <- list(
 )
 
 pheatmap(testing, 
-         annotation_col = Color_annotation_df, 
+         annotation_col = GoodSamples80_pipeSummary["Type2"], # Doesn't work
          annotation_colors = my_annotation_colors,
          scale = "row",
          cutree_cols = 5)
 
-
+pheatmap(testing, 
+         annotation_col = my_pipeSummary, 
+         annotation_colors = my_annotation_colors,
+         scale = "row",
+         cutree_cols = 5)
 
 
 

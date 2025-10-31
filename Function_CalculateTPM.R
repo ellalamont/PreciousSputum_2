@@ -4,7 +4,7 @@ CalculateTPM <- function(Raw_reads) {
   
   # 1. Extract and organize the gene lengths 
   load("Data/MTb.MapSet.rda")
-  my_geneLengths <- mapSet[["geneMap"]] %>% select(GENE_ID, NAME, N_EXON_BASES)
+  my_geneLengths <- mapSet[["geneMap"]] %>% dplyr::select(GENE_ID, NAME, N_EXON_BASES)
   
   my_geneLengths_ordered <- my_geneLengths[match(Raw_reads$X, my_geneLengths$GENE_ID), ]
   my_geneLengths_ordered <- my_geneLengths_ordered %>% mutate(Kilobases = N_EXON_BASES/1000)
@@ -32,7 +32,7 @@ CalculateTPM_RvOnly <- function(Raw_reads) {
   
   # 1. Extract and organize the gene lengths 
   load("Data/MTb.MapSet.rda")
-  my_geneLengths <- mapSet[["geneMap"]] %>% select(GENE_ID, NAME, N_EXON_BASES)
+  my_geneLengths <- mapSet[["geneMap"]] %>% dplyr::select(GENE_ID, NAME, N_EXON_BASES)
   
   my_geneLengths_f <- my_geneLengths %>%
     filter(grepl("^Rv[0-9]+[A-Za-z]?$", GENE_ID))
@@ -61,7 +61,7 @@ CalculateTPM_RvOnly <- function(Raw_reads) {
 
 
 # load("Data/MTb.MapSet.rda")
-# my_geneLengths <- mapSet[["geneMap"]] %>% select(GENE_ID, NAME, N_EXON_BASES)
+# my_geneLengths <- mapSet[["geneMap"]] %>% dplyr::select(GENE_ID, NAME, N_EXON_BASES)
 # my_geneLengths_f <- my_geneLengths %>%
 #   filter(grepl("^Rv[0-9]+[A-Za-z]?$", GENE_ID))
 # my_geneLengths_ordered <- my_geneLengths_f[match(Run2_RawReads$X, my_geneLengths_f$GENE_ID), ]

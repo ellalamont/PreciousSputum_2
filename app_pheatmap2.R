@@ -21,16 +21,20 @@ my_plot_themes <- theme_bw() +
         plot.margin = margin(10, 10, 10, 20))
 
 my_annotation_colors <- list(
-  Week = c("W0" = "#0072B2",  # Blue
-           "W2" = "#E66900",  # Orange
-           "Broth" = "#999999")  # Grey
+  Type2 = c("W0 sputum (cure)" = "#0072B2",
+            "W0 sputum (relapse)" = "red", 
+            "W2 sputum (cure)" = "green4",
+            "W2 sputum (relapse)" = "#6A3D9A", 
+            "Broth" = "#999999")
 )
 
 my_tpm <- GoodSamples80_tpmf %>% select(-contains("THP1"))
 
-my_pipeSummary <- GoodSamples80_pipeSummary %>% mutate(Week = case_when(Week == "Week 0" ~ "W0",
-                                                                         Week == "Week 2" ~ "W2",
-                                                                         is.na(Week) ~ "Broth"))
+my_pipeSummary <- GoodSamples80_pipeSummary %>%
+  # filter(SampleID2 %in% colnames(testing)) %>%
+  filter(Type2 != "THP1 spiked") %>%
+  select(SampleID2, Type2) %>%
+  column_to_rownames("SampleID2")
 
 # Define UI ----
 ui <- fluidPage(
@@ -43,8 +47,8 @@ ui <- fluidPage(
            # Which timepoints to plot
            checkboxGroupInput("timepoints",
                               label = "Select Timepoints",
-                              choices = c("Broth", "W0", "W2"),
-                              selected = c("Broth", "W0", "W2")),
+                              choices = unique(my_pipeSummary$Type2),
+                              selected = unique(my_pipeSummary$Type2)),
 
            # Dropdown for selecting which rda file (gene set source)
            selectInput("my_GeneSetSource",
@@ -143,11 +147,16 @@ server <- function(input, output, session) {
   output$pheatmap <- renderPlot({
     
     # Make a list of the columns for each timepoint
-    timepoint_columns <- list(
-      "W0" = colnames(my_tpm)[str_detect(colnames(my_tpm), "W0")],
-      "W2" = colnames(my_tpm)[str_detect(colnames(my_tpm), "W2")],
-      "Broth" = colnames(my_tpm)[str_detect(colnames(my_tpm), "Broth")]
-    )
+    timepoint_columns <- my_pipeSummary %>%
+      mutate(SampleID2 = rownames(my_pipeSummary)) %>%
+      group_by(Type2) %>%
+      summarise(
+        Samples = list(
+          intersect(SampleID2, colnames(my_tpm))
+        ),
+        .groups = "drop"
+      ) %>%
+      { setNames(.$Samples, .$Type2) }
     
     selected_genes <- get_selected_genes()
     
@@ -175,7 +184,7 @@ server <- function(input, output, session) {
     
   
     p <- pheatmap(my_data, 
-                  annotation_col = my_pipeSummary["Week"], 
+                  annotation_col = my_pipeSummary, 
                   annotation_colors = my_annotation_colors,
                   # col = colorRampPalette(c("navy", "white", "firebrick3"))(50),
                   scale = input$my_scaling, 
