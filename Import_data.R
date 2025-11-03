@@ -287,6 +287,14 @@ SputumSampleList50 <- GoodSampleList50[grep("W", GoodSampleList50)] # 56 as of R
 GoodSamples50_pipeSummary <- my_pipeSummary %>% filter(SampleID2 %in% GoodSampleList50)
 GoodSamples50_tpmf <- All_tpm_f %>% dplyr::select(all_of(GoodSampleList50))
 
+# With 60% Transcriptional Coverage (11/3/25)
+GoodSampleList50 <- my_pipeSummary %>%
+  filter(N_Genomic >= 1000000 & Txn_Coverage_f >= 50) %>% 
+  pull(SampleID2)
+SputumSampleList50 <- GoodSampleList50[grep("W", GoodSampleList50)] # 56 as of Run3
+GoodSamples50_pipeSummary <- my_pipeSummary %>% filter(SampleID2 %in% GoodSampleList50)
+GoodSamples50_tpmf <- All_tpm_f %>% dplyr::select(all_of(GoodSampleList50))
+
 # Number of sputum samples with > 1 million reads
 my_pipeSummary %>%
   filter(N_Genomic >= 1000000) %>% 
