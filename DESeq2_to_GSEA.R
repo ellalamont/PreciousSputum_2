@@ -1,5 +1,7 @@
+# DESeq2 to GSEA with Raw Reads and custom gene sets
+# E. Lamont
+# 11/3/25
 
-# Can I get all the way through the way people normally do?
 
 source("Import_data.R") # GoodSamples80_RawReadsf, GoodSamples80_pipeSummary
 
@@ -37,11 +39,6 @@ my_RawCounts <- GoodSamples80_RawReadsf %>% # rename("GENE_ID" = "X")
   column_to_rownames("X") %>%
   mutate_if(is.numeric, ~ as.integer(round(., 0)))
 
-# Remove any gene with less than 10 reads across all samples (require that for every gene: at least 1 of 6 samples must have counts greater than 10) https://rnabio.org/module-03-expression/0003/03/03/Differential_Expression-DESeq2/
-# which(rowSums(my_RawCounts >= 10) >= 1)
-# my_RawCounts <- my_RawCounts[which(rowSums(my_RawCounts >= 10) >= 1),] # Now only 4025 genes
-
-
 # Start with GoodSamples80_pipeSummary
 my_metadata <- GoodSamples80_pipeSummary %>% 
   mutate(batch = case_when(
@@ -49,7 +46,7 @@ my_metadata <- GoodSamples80_pipeSummary %>%
     Run == "PredictTB_Run1" ~ 2,
     Run == "PredictTB_Run2" ~ 3,
     Run == "PredictTB_Run2.5" ~ 4,
-    Run == "PredictTB_Run3" ~ 5)) %>%
+    Run == "PredictTB_Run3" ~ 5)) %>% # This is for batch correction which I haven't done
   dplyr::select(SampleID, SampleID2, Type2, batch) %>%
   rename("sample" = "SampleID2", "condition" = "Type2") %>%
   column_to_rownames("sample")
@@ -63,14 +60,10 @@ stopifnot(all(colnames(my_RawCounts) %in% rownames(my_metadata)))
 my_metadata <- my_metadata[colnames(my_RawCounts), ]
 stopifnot(all(colnames(my_RawCounts) == rownames(my_metadata)))
 
-# PCA to visualize data before correction
-summary(colSums(my_RawCounts))                   # total reads per sample
-hist(log10(colSums(my_RawCounts)+1))             # distribution of library sizes
-
 ################################################
 ################## RUN DESEQ2 ##################
+# Without CombatSeq
 
-####### TRY WITHOUT COMBAT SEQ ######
 # Build DESeq
 dds <- DESeqDataSetFromMatrix(countData = my_RawCounts,
                                      colData = my_metadata,
@@ -83,18 +76,15 @@ summary(res_W0Cure_vs_W2Cure)
 
 # Save output
 res_W0Cure_vs_W2Cure_df <- as.data.frame(res_W0Cure_vs_W2Cure) %>% rownames_to_column("gene")
-# res_W0Cure_vs_W2Cure_df$FDR_PVALUE <- p.adjust(res_W0Cure_vs_W2Cure_df$pvalue, method = "fdr")
 
 # Columns for Log2Fold > 2
 res_W0Cure_vs_W2Cure_df$DE2 <- ifelse(res_W0Cure_vs_W2Cure_df$log2FoldChange < -2 & res_W0Cure_vs_W2Cure_df$pvalue < 0.05, "significant down", ifelse(res_W0Cure_vs_W2Cure_df$log2FoldChange > 2 & res_W0Cure_vs_W2Cure_df$pvalue < 0.05, "significant up", "not significant"))
 res_W0Cure_vs_W2Cure_df$DE2 <- factor(res_W0Cure_vs_W2Cure_df$DE2, levels = c("significant down", "not significant", "significant up"))
 res_W0Cure_vs_W2Cure_df$DE2_labels <- ifelse(res_W0Cure_vs_W2Cure_df$DE2 != "not significant", res_W0Cure_vs_W2Cure_df$gene, NA)
 
-# Volcano plot
-# ggplot(res_W0Cure_vs_W2Cure_df, aes(x = log2FoldChange, y = -log10(padj))) +
-#   geom_point(aes(color = padj < 0.05)) +
-#   theme_bw() + scale_color_manual(values = c("grey", "red")) +
-#   labs(title = "W0_cure vs Broth")
+
+################################################
+################# VOLCANO PLOT #################
 
 my_plot_themes <- theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
@@ -113,10 +103,8 @@ my_volcano <- res_W0Cure_vs_W2Cure_df %>%
   labs(title = "DESeq2 W0_cure vs Broth Log2Fold=2") + 
   geom_vline(xintercept = c(-2,2), col = "grey", linetype = "dashed") + 
   geom_hline(yintercept = -log10(0.05), col = "grey", linetype = "dashed") + 
-  geom_text_repel(max.overlaps = 10, size = 4) +  # Can do geom_text_repel or geom_label_rebel # Changed from 3 to 4
-  
+  geom_text_repel(max.overlaps = 10, size = 4) +  # Can do geom_text_repel or geom_label_rebel 
   # Need it this way so the colors aren't messed up by not having significant up or down
-  # scale_color_manual(values = c("#00AFBB", "grey", "#bb0c00")) + 
   scale_color_manual(values = c(`significant down` = "#00AFBB", `not significant` = "grey", `significant up` = "#bb0c00"))
 plot_build <- ggplot_build(my_volcano)
 y_max <- max(plot_build$layout$panel_scales_y[[1]]$range$range)
@@ -130,34 +118,28 @@ my_volcano_annotated <- my_volcano +
 final_volcano <- my_volcano_annotated + my_plot_themes
 final_volcano
 
+
 ################################################
 ##################### GSEA #####################
-
 # Remove NAs 
 res <- res_W0Cure_vs_W2Cure_df %>%
   filter(!is.na(padj)) %>% 
   arrange(desc(log2FoldChange))
 
-# Create a ranked vector (using stat but think could also use Log2FoldChange)
+# Create a ranked vector (using stat or Log2FoldChange)
 ranks <- res$log2FoldChange
 names(ranks) <- res$gene
 ranks <- sort(ranks, decreasing = TRUE)
 
-# Optional: filter out NAs or duplicated genes
+# Filter out NAs or duplicated genes
 ranks <- ranks[!is.na(ranks)]
 ranks <- ranks[!duplicated(names(ranks))]
 
-# --- 6. Load your custom gene sets ---
-# CSV format: Gene,GeneSet
-# gene_sets <- read.csv("Data/GeneSet_Data/TAR_Poonawala2024_GeneSets.csv")
-# # Convert to list format for enrichment testing
-# custom_list <- gene_sets %>%
-#   group_by(GeneSet) %>%
-#   summarize(genes = list(unique(Gene))) %>%
-#   deframe()
+# Load custom gene sets. Needs to have columns Gene, GeneSet. Will take from allGeneSetList
 custom_list <- allGeneSetList[["EllaGeneSets_2025.10.24"]]
+EllaGeneSets_2025.10.24 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.10.24.csv") # Also need the csv to get the grouping for plotting with facets
 
-# --- 8. Run fgsea with your gene sets ---
+# Run fgsea
 fgsea_res <- fgsea(
   pathways = custom_list,
   stats = ranks,
@@ -165,30 +147,56 @@ fgsea_res <- fgsea(
   maxSize = 500
 )
 
-fgsea_res_tidy <- fgsea_res %>%
-  arrange(padj) %>%
-  as_tibble()
+################################################
+################### DOT PLOT ###################
+my_plot_themes <- theme_bw() +
+  theme(legend.position = "right",legend.text=element_text(size=10),
+        legend.title = element_text(size = 10),
+        plot.title = element_text(size=10), 
+        axis.title.x = element_text(size=10), 
+        axis.text.x = element_text(angle = 0, size=10, vjust=0, hjust=0.5),
+        # axis.text.x = element_text(angle = 45, size=7, vjust=1, hjust=1),
+        axis.title.y = element_text(size=10),
+        axis.text.y = element_text(size=10), 
+        plot.subtitle = element_text(size=10)
+  )
+facet_themes <- theme(strip.background=element_rect(fill="white", linewidth = 0.9),
+                      strip.text = element_text(size = 7))
 
-# 10. Visualize top pathways ---
-topPathwaysUp <- fgsea_res_tidy %>%
-  filter(ES > 0) %>%
-  arrange(padj) %>%
-  head(10)
+# Add groupings
+fgsea_res2 <- fgsea_res %>%
+  mutate(pathway = str_wrap(pathway, width = 50)) %>% 
+  mutate(FDR_Significance = ifelse(padj < 0.05, "significant", "not significant")) %>%
+  left_join(EllaGeneSets_2025.10.24 %>% # Add the Group names
+              rename(pathway = GeneSet) %>%
+              dplyr::select(pathway, Group), by = "pathway")
 
-topPathwaysDown <- fgsea_res_tidy %>%
-  filter(ES < 0) %>%
-  arrange(padj) %>%
-  head(10)
+# Make the bubble plot
+my_bubblePlot <- fgsea_res2 %>%
+  mutate(Group_wrapped = str_wrap(Group, width = 19)) %>%
+  mutate(Group_wrapped = case_when(Group_wrapped == "Ribosomal proteins" ~ "Ribosomal\nproteins", Group_wrapped == "Hypoxia related" ~ "Hypoxia\nrelated", TRUE ~ Group_wrapped)) %>%
+  filter(Group != "Toxin/Antitoxin") %>% # Remove this because I don't think its interesting
+  mutate(pathway2 = paste0(pathway, " (n=", size, ")")) %>%
+  ggplot(aes(x = NES, y = pathway2)) + 
+  geom_point(aes(stroke = ifelse(FDR_Significance == "significant", 0.8, 0),
+                 fill = case_when(FDR_Significance == "significant" & NES>0 ~ "pos",
+                                  FDR_Significance == "significant" & NES<0 ~ "neg",
+                                  TRUE ~ "ns")),
+             size = 4, shape = 21, alpha = 0.9) + 
+  scale_fill_manual(values = c("pos" = "#bb0c00", "neg" = "#00AFBB", "ns"  = "grey")) +
+  facet_grid(rows = vars(Group_wrapped), scales = "free_y", space = "free") + 
+  guides(shape = "none") + 
+  scale_x_continuous(limits = c(-3.5, 3.5), breaks = seq(-3, 3, 1)) + 
+  geom_vline(xintercept = 0) + 
+  labs(title = "W2CureVsW0Cure (Run1-3) DESeq2->GSEA", y = NULL, x = "Normalized Enrichment Score") + 
+  my_plot_themes + facet_themes + theme(legend.position = "none")
+my_bubblePlot
+ggsave(my_bubblePlot,
+       file = paste0("W2CureVsW0Cure_EllaGeneSets_2024.10.24_DESeq2_GSEA", ".pdf"),
+       path = "Figures/Bubbles/DESeq2_GSEA/EllaGeneSets",
+       width = 8, height = 8, units = "in")
 
-ggplot(topPathwaysUp, aes(reorder(pathway, NES), NES)) +
-  geom_col(fill = "firebrick") +
-  coord_flip() +
-  labs(title = "Top Upregulated Pathways", x = "Pathway", y = "Normalized Enrichment Score")
 
-ggplot(topPathwaysDown, aes(reorder(pathway, NES), NES)) +
-  geom_col(fill = "steelblue") +
-  coord_flip() +
-  labs(title = "Top Downregulated Pathways", x = "Pathway", y = "Normalized Enrichment Score")
 
 
 
