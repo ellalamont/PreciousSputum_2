@@ -244,13 +244,202 @@ PCA_fig
 #        width = 10, height = 6, units = "in")
 
 
+###########################################################
+############### PCA GOODSAMPLES TPM_F 60% #################
+# Passing filter is >1,000,000 genomic reads and >60% genes with at least 10 reads, already subsetted in Import_data.R
+# Rv GENES ONLY INCLUDED IN TXN COVERAGE
+
+# Convert gene column to rownames
+my_tpm <- GoodSamples60_tpmf %>% # column_to_rownames(var = "X")
+  select(!contains("THP1")) # Remove the spiked samples
+
+# Transform the data
+my_tpm_t <- as.data.frame(t(my_tpm))
+
+# Remove columns that are all zero so the scale works for prcomp
+my_tpm_t2 <- my_tpm_t %>% select_if(colSums(.) != 0)
+
+# Make the actual PCA
+my_PCA <- prcomp(my_tpm_t2, scale = TRUE)
+
+# See the % Variance explained
+summary(my_PCA)
+summary_PCA <- format(round(as.data.frame(summary(my_PCA)[["importance"]]['Proportion of Variance',]) * 100, digits = 1), nsmall = 1) # format and round used to control the digits after the decimal place
+summary_PCA[1,1] # PC1 explains 16.5% of variance
+summary_PCA[2,1] # PC2 explains 9.6% of variance
+summary_PCA[3,1] # PC3 explains 8.4% of variance
+
+# MAKE PCA PLOT with GGPLOT 
+my_PCA_df <- as.data.frame(my_PCA$x[, 1:3]) # Extract the first 3 PCs
+my_PCA_df <- data.frame(SampleID2 = row.names(my_PCA_df), my_PCA_df)
+my_PCA_df <- merge(my_PCA_df, GoodSamples60_pipeSummary, by = "SampleID2", )
+
+PCA_fig <- my_PCA_df %>% 
+  ggplot(aes(x = PC1, y = PC2, fill = Type2, shape = Type2)) + 
+  geom_point(aes(fill = Type2, shape = Type2), size = 5, alpha = 0.8, stroke = 0.8) +
+  # geom_text_repel(aes(label = Lineage), size = 2.5) + 
+  scale_fill_manual(values = my_fav_colors) +  
+  scale_shape_manual(values = my_fav_shapes) + 
+  # geom_text_repel(aes(label = Txn_Coverage_f), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  labs(title = "PCA: >1M reads and >60% genes with at least 10 reads (Run1-3)",
+       subtitle = "TPM filtered (Rv genes only). Far out W2 is Run2_W2_12073",
+       x = paste0("PC1: ", summary_PCA[1,1], "%"),
+       y = paste0("PC2: ", summary_PCA[2,1], "%")) +
+  my_plot_themes
+PCA_fig
+# ggsave(PCA_fig,
+#        file = paste0("GoodSamples_tpmf_txnCov60.pdf"),
+#        path = "Figures/PCA",
+#        width = 10, height = 6, units = "in")
+
+
+###########################################################
+############ PCA GOODSAMPLES TPM_F 60% - W0 ONLY ##########
+# Passing filter is >1,000,000 genomic reads and >50% genes with at least 10 reads, already subsetted in Import_data.R
+# Rv GENES ONLY INCLUDED IN TXN COVERAGE
+
+# Convert gene column to rownames
+my_tpm <- GoodSamples60_tpmf %>% # column_to_rownames(var = "X")
+  select(contains("W0")) # Only keep W0 samples
+
+# Transform the data
+my_tpm_t <- as.data.frame(t(my_tpm))
+
+# Remove columns that are all zero so the scale works for prcomp
+my_tpm_t2 <- my_tpm_t %>% select_if(colSums(.) != 0)
+
+# Make the actual PCA
+my_PCA <- prcomp(my_tpm_t2, scale = TRUE)
+
+# See the % Variance explained
+summary(my_PCA)
+summary_PCA <- format(round(as.data.frame(summary(my_PCA)[["importance"]]['Proportion of Variance',]) * 100, digits = 1), nsmall = 1) # format and round used to control the digits after the decimal place
+summary_PCA[1,1] # PC1 explains 11.8% of variance
+summary_PCA[2,1] # PC2 explains 9.9% of variance
+summary_PCA[3,1] # PC3 explains 7.9% of variance
+
+# MAKE PCA PLOT with GGPLOT 
+my_PCA_df <- as.data.frame(my_PCA$x[, 1:3]) # Extract the first 3 PCs
+my_PCA_df <- data.frame(SampleID2 = row.names(my_PCA_df), my_PCA_df)
+my_PCA_df <- merge(my_PCA_df, GoodSamples60_pipeSummary, by = "SampleID2", )
+
+PCA_fig <- my_PCA_df %>% 
+  ggplot(aes(x = PC1, y = PC2, fill = Type2, shape = Type2)) + 
+  geom_point(aes(fill = Type2, shape = Type2), size = 5, alpha = 0.8, stroke = 0.8) +
+  # geom_text_repel(aes(label = Lineage), size = 2.5) + 
+  scale_fill_manual(values = my_fav_colors) +  
+  scale_shape_manual(values = my_fav_shapes) + 
+  geom_text_repel(aes(label = SampleID2), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  labs(title = "PCA: >1M reads and >60% genes with at least 10 reads (Run1-3) W0 only",
+       subtitle = "TPM filtered (Rv genes only) Numbers are % txn coverage",
+       x = paste0("PC1: ", summary_PCA[1,1], "%"),
+       y = paste0("PC2: ", summary_PCA[2,1], "%")) +
+  my_plot_themes
+PCA_fig
+# ggsave(PCA_fig,
+#        file = paste0("W0_GoodSamples_tpmf_txnCov60.pdf"),
+#        path = "Figures/PCA",
+#        width = 10, height = 6, units = "in")
 
 
 
+###########################################################
+############ PCA GOODSAMPLES TPM_F 60% - W2 ONLY ##########
+# Passing filter is >1,000,000 genomic reads and >50% genes with at least 10 reads, already subsetted in Import_data.R
+# Rv GENES ONLY INCLUDED IN TXN COVERAGE
+
+# Convert gene column to rownames
+my_tpm <- GoodSamples60_tpmf %>% # column_to_rownames(var = "X")
+  select(contains("W2")) # Only keep W0 samples
+
+# Transform the data
+my_tpm_t <- as.data.frame(t(my_tpm))
+
+# Remove columns that are all zero so the scale works for prcomp
+my_tpm_t2 <- my_tpm_t %>% select_if(colSums(.) != 0)
+
+# Make the actual PCA
+my_PCA <- prcomp(my_tpm_t2, scale = TRUE)
+
+# See the % Variance explained
+summary(my_PCA)
+summary_PCA <- format(round(as.data.frame(summary(my_PCA)[["importance"]]['Proportion of Variance',]) * 100, digits = 1), nsmall = 1) # format and round used to control the digits after the decimal place
+summary_PCA[1,1] # PC1 explains 18.9% of variance
+summary_PCA[2,1] # PC2 explains 18.1% of variance
+summary_PCA[3,1] # PC3 explains 13.6% of variance
+
+# MAKE PCA PLOT with GGPLOT 
+my_PCA_df <- as.data.frame(my_PCA$x[, 1:3]) # Extract the first 3 PCs
+my_PCA_df <- data.frame(SampleID2 = row.names(my_PCA_df), my_PCA_df)
+my_PCA_df <- merge(my_PCA_df, GoodSamples60_pipeSummary, by = "SampleID2", )
+
+PCA_fig <- my_PCA_df %>% 
+  ggplot(aes(x = PC1, y = PC2, fill = Type2, shape = Type2)) + 
+  geom_point(aes(fill = Type2, shape = Type2), size = 5, alpha = 0.8, stroke = 0.8) +
+  # geom_text_repel(aes(label = Lineage), size = 2.5) + 
+  scale_fill_manual(values = my_fav_colors) +  
+  scale_shape_manual(values = my_fav_shapes) + 
+  geom_text_repel(aes(label = SampleID2), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  labs(title = "PCA: >1M reads and >60% genes with at least 10 reads (Run1-3) W2 only",
+       subtitle = "TPM filtered (Rv genes only) Numbers are % txn coverage",
+       x = paste0("PC1: ", summary_PCA[1,1], "%"),
+       y = paste0("PC2: ", summary_PCA[2,1], "%")) +
+  my_plot_themes
+PCA_fig
+# ggsave(PCA_fig,
+#        file = paste0("W2_GoodSamples_tpmf_txnCov60.pdf"),
+#        path = "Figures/PCA",
+#        width = 10, height = 6, units = "in")
 
 
+###########################################################
+####### PCA GOODSAMPLES TPM_F 60% LOW GENES REMOVED #######
+# Passing filter is >1,000,000 genomic reads and >60% genes with at least 10 reads, already subsetted in Import_data.R
+# Rv GENES ONLY INCLUDED IN TXN COVERAGE
+# 11/4/25: Remove the Genes that are <10 TPM in any sample
 
+# Convert gene column to rownames
+my_tpm <- GoodSamples60_tpmf %>% # column_to_rownames(var = "X")
+  select(!contains("THP1")) # Remove the spiked samples
 
+# Transform the data
+my_tpm_t <- as.data.frame(t(my_tpm))
+
+# Remove columns that are all zero so the scale works for prcomp
+my_tpm_t2 <- my_tpm_t %>% select_if(colSums(.) != 0)
+
+# Make the actual PCA
+my_PCA <- prcomp(my_tpm_t2, scale = TRUE)
+
+# See the % Variance explained
+summary(my_PCA)
+summary_PCA <- format(round(as.data.frame(summary(my_PCA)[["importance"]]['Proportion of Variance',]) * 100, digits = 1), nsmall = 1) # format and round used to control the digits after the decimal place
+summary_PCA[1,1] # PC1 explains 16.5% of variance
+summary_PCA[2,1] # PC2 explains 9.6% of variance
+summary_PCA[3,1] # PC3 explains 8.4% of variance
+
+# MAKE PCA PLOT with GGPLOT 
+my_PCA_df <- as.data.frame(my_PCA$x[, 1:3]) # Extract the first 3 PCs
+my_PCA_df <- data.frame(SampleID2 = row.names(my_PCA_df), my_PCA_df)
+my_PCA_df <- merge(my_PCA_df, GoodSamples60_pipeSummary, by = "SampleID2", )
+
+PCA_fig <- my_PCA_df %>% 
+  ggplot(aes(x = PC1, y = PC2, fill = Type2, shape = Type2)) + 
+  geom_point(aes(fill = Type2, shape = Type2), size = 5, alpha = 0.8, stroke = 0.8) +
+  # geom_text_repel(aes(label = Lineage), size = 2.5) + 
+  scale_fill_manual(values = my_fav_colors) +  
+  scale_shape_manual(values = my_fav_shapes) + 
+  # geom_text_repel(aes(label = Txn_Coverage_f), size= 2, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
+  labs(title = "PCA: >1M reads and >60% genes with at least 10 reads (Run1-3)",
+       subtitle = "TPM filtered (Rv genes only). Far out W2 is Run2_W2_12073",
+       x = paste0("PC1: ", summary_PCA[1,1], "%"),
+       y = paste0("PC2: ", summary_PCA[2,1], "%")) +
+  my_plot_themes
+PCA_fig
+# ggsave(PCA_fig,
+#        file = paste0("GoodSamples_tpmf_txnCov60.pdf"),
+#        path = "Figures/PCA",
+#        width = 10, height = 6, units = "in")
 
 ###########################################################
 ################# PCA GOODSAMPLES TPM 80% #################

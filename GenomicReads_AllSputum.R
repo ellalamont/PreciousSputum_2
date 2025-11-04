@@ -91,7 +91,7 @@ P_Genomic_box1
 ###########################################################
 ############ AtLeast.10.Reads vs SAMPLE TYPE ##############
 
-TenReads_box1 <- sputum_pipeSummary %>% 
+TenReads_box2 <- sputum_pipeSummary %>% 
   ggplot(aes(x = Type, y = Txn_Coverage_f)) + 
   geom_boxplot(fill="grey", width = 0.6, outlier.size = 0.9, alpha = 0.2) + 
   geom_point(aes(fill = Type2, shape = Type2), alpha = 0.8, size = 2, position = position_jitter(0.2)) + 
@@ -99,16 +99,16 @@ TenReads_box1 <- sputum_pipeSummary %>%
   scale_fill_manual(values=my_fav_colors) +  
   # geom_text_repel(aes(label = format(SampleID, big.mark = ",")), size= 2, box.padding = 0.4, segment.color = "black", max.overlaps = Inf) + 
   scale_y_continuous(limits = c(0,100.1), breaks = seq(0, 100.1, 10)) + 
-  geom_hline(yintercept = 80, linetype = "dashed", alpha = 0.5) + 
-  geom_hline(yintercept = 50, linetype = "dashed", alpha = 0.5) + 
+  geom_hline(yintercept = 60, linetype = "dashed", alpha = 0.5) + 
+  # geom_hline(yintercept = 50, linetype = "dashed", alpha = 0.5) + 
   labs(title = "Genes with >= 10 reads aligning for all sputum (Run1-3)",
     # subtitle = "", 
     x = "Sample type", 
     y = "% transcriptional coverage") + 
   my_plot_themes
-TenReads_box1
-# ggsave(TenReads_box1,
-#        file = paste0("Sputum_TenReads_box1.pdf"),
+TenReads_box2
+# ggsave(TenReads_box2,
+#        file = paste0("Sputum_TenReads_box2.pdf"),
 #        path = "Figures/GenomicRead_Analyses",
 #        width = 6, height = 5, units = "in")
 

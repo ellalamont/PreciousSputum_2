@@ -4,17 +4,19 @@
 
 source("Import_data.R")
 
-# Data is coming from the Lenovo PredictTB_Run2
+# Data is coming from the Lenovo PredictTB_Run3
+# 11/4/25: Using the 60% Txn coverage cutoff
 
 
 ###########################################################
 ################### IMPORT BOB's DE DATA ##################
 
-`W0.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_Ra/W0_cure.MTb.Meta.JOINED.txt")
-`W0.relapse.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W0.relapse/W0_relapse.MTb.Meta.JOINED.txt")
-`W2.cure.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/W2_cure.MTb.Meta.JOINED.txt")
-`W0.relapse.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.relapse_vs_Ra/W0_relapse.MTb.Meta.JOINED.txt")
-`W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W2.cure_vs_Ra/W2_cure.MTb.Meta.JOINED.txt")
+`W0.cure.ComparedTo.Ra` <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_Ra/W0_cure.MTb.Meta.JOINED.txt")
+`W0.relapse.ComparedTo.W0.cure` <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W0.relapse/W0_relapse.MTb.Meta.JOINED.txt")
+`W2.cure.ComparedTo.W0.cure` <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W2.cure/W2_cure.MTb.Meta.JOINED.txt")
+`W0.relapse.ComparedTo.Ra` <- read.delim("Data/DE_Run1to3_60TxnCov/W0.relapse_vs_Ra/W0_relapse.MTb.Meta.JOINED.txt")
+`W2.cure.ComparedTo.Ra` <- read.delim("Data/DE_Run1to3_60TxnCov/W2.cure_vs_Ra/W2_cure.MTb.Meta.JOINED.txt")
+`W2.relapse.ComparedTo.W2.cure` <- read.delim("Data/DE_Run1to3_60TxnCov/W2.cure_vs_W2.relapse/W2_relapse.MTb.Meta.JOINED.txt")
 
 # Comparing the same sample run twice
 W0_13051_Compare <- read.delim("Data/Differential_Expression_Run1to3/W0_13051/W0_13051_S42.MTb.Meta.JOINED.txt")
@@ -32,6 +34,7 @@ list_dfs <- list(`W0.cure.ComparedTo.Ra`,
                  `W2.cure.ComparedTo.W0.cure`, 
                  `W0.relapse.ComparedTo.Ra`,
                  `W2.cure.ComparedTo.Ra`,
+                 `W2.relapse.ComparedTo.W2.cure`,
                  
                  W0_13051_Compare,
                  W2_11058_Compare, 
@@ -46,6 +49,7 @@ df_names <- c("W0.cure.ComparedTo.Ra",
               "W2.cure.ComparedTo.W0.cure", 
               "W0.relapse.ComparedTo.Ra",
               "W2.cure.ComparedTo.Ra",
+              "W2.relapse.ComparedTo.W2.cure",
               
               "W0_13051_Compare",
               "W2_11058_Compare", 
@@ -111,13 +115,14 @@ for (i in 1:length(list_dfs_f)) {
 ###########################################################
 ############# IMPORT BOB's METAGENESETS DATA ##############
 
-`MetaGeneSets_W0.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_Ra/W0_cure.MTb.MetaGeneSets.UP.txt")
-`MetaGeneSets_W0.relapse.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W0.relapse/W0_relapse.MTb.MetaGeneSets.UP.txt")
-`MetaGeneSets_W2.cure.ComparedTo.W0.cure` <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/W2_cure.MTb.MetaGeneSets.UP.txt")
-`MetaGeneSets_W0.relapse.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W0.relapse_vs_Ra/W0_relapse.MTb.MetaGeneSets.UP.txt")
-`MetaGeneSets_W2.cure.ComparedTo.Ra` <- read.delim("Data/Differential_Expression_Run1to3/W2.cure_vs_Ra/W2_cure.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W0.cure.ComparedTo.Ra` <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_Ra/W0_cure.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W0.relapse.ComparedTo.W0.cure` <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W0.relapse/W0_relapse.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W2.cure.ComparedTo.W0.cure` <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W2.cure/W2_cure.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W0.relapse.ComparedTo.Ra` <- read.delim("Data/DE_Run1to3_60TxnCov/W0.relapse_vs_Ra/W0_relapse.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W2.cure.ComparedTo.Ra` <- read.delim("Data/DE_Run1to3_60TxnCov/W2.cure_vs_Ra/W2_cure.MTb.MetaGeneSets.UP.txt")
+`MetaGeneSets_W2.relapse.ComparedTo.W2.cure` <- read.delim("Data/DE_Run1to3_60TxnCov/W2.cure_vs_W2.relapse/W2_relapse.MTb.MetaGeneSets.UP.txt")
 
 # Specific gene sets I made
-TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/TAR_W2_cure.MTb.MetaGeneSets.UP.txt")
-EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cure <- read.delim("Data/Differential_Expression_Run1to3/W0.cure_vs_W2.cure/EllaGeneSets_2025.10.24_W2_cure.MTb.MetaGeneSets.UP.txt")
+TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W2.cure_TAR/W2_cure.MTb.MetaGeneSets.UP.txt")
+EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cure <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W2.cure_EllaGeneSets_2025.10.24/W2_cure.MTb.MetaGeneSets.UP.txt")
 

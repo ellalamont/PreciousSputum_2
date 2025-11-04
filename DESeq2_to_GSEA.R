@@ -33,14 +33,15 @@ library(msigdbr)
 
 ################################################
 ################ ORGANIZE DATA #################
+# 11/4/25: Changed to be >60% txn coverage!
 
-# Start with GoodSamples80_RawReadsf
-my_RawCounts <- GoodSamples80_RawReadsf %>% # rename("GENE_ID" = "X")
+# Start with GoodSamples60_RawReadsf
+my_RawCounts <- GoodSamples60_RawReadsf %>% # rename("GENE_ID" = "X")
   column_to_rownames("X") %>%
   mutate_if(is.numeric, ~ as.integer(round(., 0)))
 
-# Start with GoodSamples80_pipeSummary
-my_metadata <- GoodSamples80_pipeSummary %>% 
+# Start with GoodSamples60_pipeSummary
+my_metadata <- GoodSamples60_pipeSummary %>% 
   mutate(batch = case_when(
     Run == "ProbeTest5" ~ 1,
     Run == "PredictTB_Run1" ~ 2,
@@ -71,14 +72,13 @@ dds <- DESeqDataSetFromMatrix(countData = my_RawCounts,
 dds <- DESeq(dds)
 res_W0Cure_vs_W2Cure <- results(dds, contrast = c("condition", "W2_sputum_cure", "W0_sputum_cure"))
 
-res_W0Cure_vs_W2Cure_Ordered <- res_W0Cure_vs_W2Cure[order(res_W0Cure_vs_W2Cure$pvalue),]
 summary(res_W0Cure_vs_W2Cure)
 
 # Save output
 res_W0Cure_vs_W2Cure_df <- as.data.frame(res_W0Cure_vs_W2Cure) %>% rownames_to_column("gene")
 
 # Columns for Log2Fold > 2
-res_W0Cure_vs_W2Cure_df$DE2 <- ifelse(res_W0Cure_vs_W2Cure_df$log2FoldChange < -2 & res_W0Cure_vs_W2Cure_df$pvalue < 0.05, "significant down", ifelse(res_W0Cure_vs_W2Cure_df$log2FoldChange > 2 & res_W0Cure_vs_W2Cure_df$pvalue < 0.05, "significant up", "not significant"))
+res_W0Cure_vs_W2Cure_df$DE2 <- ifelse(res_W0Cure_vs_W2Cure_df$log2FoldChange < -2 & res_W0Cure_vs_W2Cure_df$padj < 0.05, "significant down", ifelse(res_W0Cure_vs_W2Cure_df$log2FoldChange > 2 & res_W0Cure_vs_W2Cure_df$padj < 0.05, "significant up", "not significant"))
 res_W0Cure_vs_W2Cure_df$DE2 <- factor(res_W0Cure_vs_W2Cure_df$DE2, levels = c("significant down", "not significant", "significant up"))
 res_W0Cure_vs_W2Cure_df$DE2_labels <- ifelse(res_W0Cure_vs_W2Cure_df$DE2 != "not significant", res_W0Cure_vs_W2Cure_df$gene, NA)
 
@@ -100,7 +100,7 @@ my_plot_themes <- theme_bw() +
 my_volcano <- res_W0Cure_vs_W2Cure_df %>%
   ggplot(aes(x = log2FoldChange, y = -log10(padj), col = DE2, label = DE2_labels, text = gene)) + # text is for plotly, could be GENE_ID
   geom_point(alpha = 0.7) + 
-  labs(title = "DESeq2 W0_cure vs Broth Log2Fold=2") + 
+  labs(title = "DESeq2 W2_cure vs W0_cure Log2Fold=2") + 
   geom_vline(xintercept = c(-2,2), col = "grey", linetype = "dashed") + 
   geom_hline(yintercept = -log10(0.05), col = "grey", linetype = "dashed") + 
   geom_text_repel(max.overlaps = 10, size = 4) +  # Can do geom_text_repel or geom_label_rebel 
@@ -188,20 +188,69 @@ my_bubblePlot <- fgsea_res2 %>%
   guides(shape = "none") + 
   scale_x_continuous(limits = c(-3.5, 3.5), breaks = seq(-3, 3, 1)) + 
   geom_vline(xintercept = 0) + 
-  labs(title = "W2CureVsW0Cure (Run1-3) DESeq2->GSEA", y = NULL, x = "Normalized Enrichment Score") + 
+  labs(title = "W2CureVsW0Cure (Run1-3) >60%TxnCov DESeq2->GSEA", y = NULL, x = "Normalized Enrichment Score") + 
   my_plot_themes + facet_themes + theme(legend.position = "none")
 my_bubblePlot
-ggsave(my_bubblePlot,
-       file = paste0("W2CureVsW0Cure_EllaGeneSets_2024.10.24_DESeq2_GSEA", ".pdf"),
-       path = "Figures/Bubbles/DESeq2_GSEA/EllaGeneSets",
-       width = 8, height = 8, units = "in")
+# ggsave(my_bubblePlot,
+#        file = paste0("W2CureVsW0Cure_EllaGeneSets_2024.10.24_DESeq2_GSEA", ".pdf"),
+#        path = "Figures/Bubbles/DESeq2_GSEA/EllaGeneSets",
+#        width = 8, height = 8, units = "in")
 
 
+################################################
+######## RUN DESEQ2 - W2 RELAPSE vs CURE #######
+# Without CombatSeq
+
+# Build DESeq
+dds <- DESeqDataSetFromMatrix(countData = my_RawCounts,
+                              colData = my_metadata,
+                              design = ~ condition)
+dds <- DESeq(dds)
+res_W2Relapse_vs_W2Cure <- results(dds, contrast = c("condition", "W2_sputum_relapse", "W2_sputum_cure"))
 
 
+summary(res_W2Relapse_vs_W2Cure)
+
+# Save output
+res_W2Relapse_vs_W2Cure_df <- as.data.frame(res_W2Relapse_vs_W2Cure) %>% rownames_to_column("gene")
+# write.csv(res_W2Relapse_vs_W2Cure_df, "Data/DESeq2_GSEA_Output/res_W2Relapse_vs_W2Cure_df.csv")
+
+# Columns for Log2Fold > 2
+res_W2Relapse_vs_W2Cure_df$DE2 <- ifelse(res_W2Relapse_vs_W2Cure_df$log2FoldChange < -2 & res_W2Relapse_vs_W2Cure_df$padj < 0.05, "significant down", ifelse(res_W2Relapse_vs_W2Cure_df$log2FoldChange > 2 & res_W2Relapse_vs_W2Cure_df$padj < 0.05, "significant up", "not significant"))
+res_W2Relapse_vs_W2Cure_df$DE2 <- factor(res_W2Relapse_vs_W2Cure_df$DE2, levels = c("significant down", "not significant", "significant up"))
+res_W2Relapse_vs_W2Cure_df$DE2_labels <- ifelse(res_W2Relapse_vs_W2Cure_df$DE2 != "not significant", res_W2Relapse_vs_W2Cure_df$gene, NA)
 
 
+my_plot_themes <- theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(legend.position = "none",legend.text=element_text(size=14),
+        legend.title = element_text(size = 14),
+        plot.title = element_text(size=10), 
+        axis.title.x = element_text(size=14), 
+        axis.text.x = element_text(angle = 0, size=14, vjust=1, hjust=0.5),
+        axis.title.y = element_text(size=14),
+        axis.text.y = element_text(size=14), 
+        plot.subtitle = element_text(size=10))
 
+my_volcano <- res_W2Relapse_vs_W2Cure_df %>%
+  ggplot(aes(x = log2FoldChange, y = -log10(padj), col = DE2, label = DE2_labels, text = gene)) + # text is for plotly, could be GENE_ID
+  geom_point(alpha = 0.7) + 
+  labs(title = "DESeq2 W2 relapse vs W2 cure Log2Fold=2 >60%TxnCov") + 
+  geom_vline(xintercept = c(-2,2), col = "grey", linetype = "dashed") + 
+  geom_hline(yintercept = -log10(0.05), col = "grey", linetype = "dashed") + 
+  geom_text_repel(max.overlaps = 10, size = 4) +  # Can do geom_text_repel or geom_label_rebel 
+  scale_color_manual(values = c(`significant down` = "#00AFBB", `not significant` = "grey", `significant up` = "#bb0c00"))
+plot_build <- ggplot_build(my_volcano)
+y_max <- max(plot_build$layout$panel_scales_y[[1]]$range$range)
+x_max <- max(plot_build$layout$panel_scales_x[[1]]$range$range)
+x_min <- min(plot_build$layout$panel_scales_x[[1]]$range$range)
+text_up <- res_W2Relapse_vs_W2Cure_df %>% filter(DE2 == "significant up") %>% nrow()
+text_down <- res_W2Relapse_vs_W2Cure_df %>% filter(DE2 == "significant down") %>% nrow()
+my_volcano_annotated <- my_volcano +
+  annotate("label", x = (x_max+1)/2, y = y_max - 0.1, label = paste0(text_up, " genes"), color = "#bb0c00", fontface = "bold", fill = "transparent", label.size = 0.3) + 
+  annotate("label", x = (x_min-1)/2, y = y_max - 0.1, label = paste0(text_down, " genes"), color = "#00AFBB", fontface = "bold", fill = "transparent", label.size = 0.3)
+final_volcano <- my_volcano_annotated + my_plot_themes
+final_volcano
 
 
 

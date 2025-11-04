@@ -28,11 +28,11 @@ ui <- fluidPage(
   
   fluidRow(
     
-    column(width = 2.5,
+    column(width = 4,
            selectInput("my_comparison",
                        label = "Volcano plots",
                        choices = df_names,
-                       width = "40%"),
+                       width = "100%"),
            
            # Add buttons for changing the log2fold threshold
            radioButtons("log2fc_threshold", 
@@ -64,9 +64,9 @@ ui <- fluidPage(
                        choices = NULL)
     ),
     
-    column(width = 5,
+    column(width = 8,
            plotlyOutput("volcano_plot",
-                        width = 1000, height = 600),
+                        width = "90%", height = "600px"),
     ),
   )
   

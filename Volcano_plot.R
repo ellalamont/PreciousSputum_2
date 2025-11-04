@@ -43,7 +43,7 @@ make_volcano_function_FDR <- function(my_df, graph_title, DE_limit) {
   my_volcano <- my_df %>%
     ggplot(aes(x = LOG2FOLD, y = -log10(FDR_PVALUE), col = .data[[my_DE_col]], label = .data[[my_DE_label]], text = GENE_NAME, label2 = GENE_ID)) + # text is for plotly, could be GENE_ID
     geom_point(alpha = 0.7) + 
-    labs(title = paste0(graph_title, " Log2Fold=", DE_limit)) + 
+    labs(title = paste0(graph_title, " Log2Fold=", DE_limit, " Run1-3 60%TxnCov")) + 
     geom_vline(xintercept = c(-DE_limit,DE_limit), col = "grey", linetype = "dashed") + 
     geom_hline(yintercept = -log10(0.05), col = "grey", linetype = "dashed") + 
     geom_text_repel(max.overlaps = 10, size = 4) +  # Can do geom_text_repel or geom_label_rebel # Changed from 3 to 4
@@ -79,18 +79,18 @@ single_plot
 #        width = 7, height = 5, units = "in")
 
 # # Loop for all the volcanos
-my_path <- "Figures/Volcano/Log2Fold2_FDR"
-for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
-  current_df_name <- df_names[i]
-  filename <- paste0(current_df_name, "_f_FDR_Run1to3.pdf")
-  my_plot <- make_volcano_function_FDR(list_dfs_f2[[i]], df_names[i], 2) ## USING FILTERED DATA ##
-  ggsave(my_plot,
-         file = filename,
-         path = my_path,
-         width = 7, height = 5, units = "in")
-}
-
-# my_path <- "Figures/Volcano/Log2Fold1_FDR"
+# my_path <- "Figures/Volcano_60TxnCov/Log2Fold2_FDR"
+# for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
+#   current_df_name <- df_names[i]
+#   filename <- paste0(current_df_name, "_f_FDR_Run1to3.pdf")
+#   my_plot <- make_volcano_function_FDR(list_dfs_f2[[i]], df_names[i], 2) ## USING FILTERED DATA ##
+#   ggsave(my_plot,
+#          file = filename,
+#          path = my_path,
+#          width = 7, height = 5, units = "in")
+# }
+# 
+# my_path <- "Figures/Volcano_60TxnCov/Log2Fold1_FDR"
 # for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
 #   current_df_name <- df_names[i]
 #   filename <- paste0(current_df_name, "_f_FDR_Run1to3.pdf")
@@ -202,12 +202,12 @@ make_volcano_function_FDR_ogP <- function(my_df, graph_title, DE_limit) {
 }
 
 
-single_plot <- make_volcano_function_FDR_ogP(list_dfs_f2[[2]], df_names[2], DE_limit = 1)
+single_plot <- make_volcano_function_FDR_ogP(list_dfs_f2[[6]], df_names[6], DE_limit = 1)
 single_plot
-ggsave(single_plot,
-       file = paste0("W0.RelapseVsCure_AVG_PVALUE.pdf"),
-       path = "Figures/Volcano",
-       width = 7, height = 5, units = "in")
+# ggsave(single_plot,
+#        file = paste0("W0.RelapseVsCure_AVG_PVALUE.pdf"),
+#        path = "Figures/Volcano",
+#        width = 7, height = 5, units = "in")
 
 
 

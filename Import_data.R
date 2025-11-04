@@ -261,7 +261,7 @@ All_pipeSummary <- All_pipeSummary %>% mutate(Txn_Coverage_f = round(AtLeast.10.
 
 # Remove the duplicates (these were hand picked)
 my_pipeSummary <- All_pipeSummary %>% 
-  filter(!SampleID2 %in% c("Run1_W0_12024", "Run3_W0_12029", "Run1_W0_12043", "Run1_W0_12082", "Run2_W2_13016", "Run1_W0_13026", "Run3_W0_13051", "Run2.5_W0_13051", "Run2_W0_13094", "Run1_W0_14051", "Run1_W0_14136", "Run1_W0_15072", "Run2_W0_15083", "Run2_W2_11058", "Run3_W2_12008", "Run2_W2_12010", "Run3_W2_12012", "Run3_W2_12029", "Run2_W2_12032", "Run3_W2_12043", "Run3_W2_13026_B", "Run3_W2_13045", "Run2_W2_14113", "Run2_W2_14136", "Run3_W2_15017", "Run2_W2_15029", "Run2_W2_15065", "Run2_W2_15089"))
+  filter(!SampleID2 %in% c("Run1_W0_12024", "Run3_W0_12029", "Run1_W0_12043", "Run1_W0_12082", "Run2_W2_13016", "Run1_W0_13026", "Run3_W0_13051", "Run2.5_W0_13051", "Run2_W0_13094", "Run1_W0_14051", "Run1_W0_14136", "Run1_W0_15072", "Run2_W0_15083", "Run2_W2_11058", "Run3_W2_12008", "Run2_W2_12010", "Run3_W2_12012", "Run3_W2_12029", "Run2_W2_12032", "Run3_W2_12043", "Run3_W2_13026_A","Run3_W2_13026_B", "Run3_W2_13045", "Run2_W2_14113", "Run2_W2_14136", "Run3_W2_15017", "Run2_W2_15029", "Run2_W2_15065", "Run2_W2_15089"))
 
 # Know broth is good
 BrothSampleList <- my_pipeSummary %>% 
@@ -294,6 +294,25 @@ GoodSampleList60 <- my_pipeSummary %>%
 SputumSampleList60 <- GoodSampleList60[grep("W", GoodSampleList60)] # 52 as of Run3
 GoodSamples60_pipeSummary <- my_pipeSummary %>% filter(SampleID2 %in% GoodSampleList60)
 GoodSamples60_tpmf <- All_tpm_f %>% dplyr::select(all_of(GoodSampleList60))
+GoodSamples60_RawReadsf <- All_RawReads_f %>% dplyr::select(X, all_of(GoodSampleList60))
+
+# Extra samples between 80txnCov and 60txnCov
+setdiff(SputumSampleList60, SputumSampleList80)
+
+###########################################################
+############# TPM WITH <10TPM GENES REMOVED ###############
+# 11/4/25: Remove the genes with <10 TPM in any sample because they cannot be trusted!!
+
+# Not done yet!!
+
+
+
+
+
+###########################################################
+##################### SUMMARY NUMBERS #####################
+
+
 
 # Number of sputum samples with > 1 million reads
 my_pipeSummary %>%
@@ -341,7 +360,7 @@ my_pipeSummary %>%
   filter(N_Genomic >= 1000000) %>% 
   filter(Txn_Coverage_f >=50) %>%
   filter(str_detect(SampleID, "W")) %>%
-  # filter(Week == "Week 0") %>% # 40
+  # filter(Week == "Week 0") %>% # 43
   # filter(Week == "Week 2") %>% # 5
   # filter(Type2 == "W0 sputum (cure)") %>% #32
   # filter(Type2 == "W2 sputum (cure)") %>% #8
@@ -349,4 +368,18 @@ my_pipeSummary %>%
   # filter(Type2 == "W2 sputum (relapse)") %>% #4
   nrow()
 # 55
+
+# Number of sputum samples with > 1 million reads and >60% txn coverage
+my_pipeSummary %>%
+  filter(N_Genomic >= 1000000) %>% 
+  filter(Txn_Coverage_f >=60) %>%
+  filter(str_detect(SampleID, "W")) %>%
+  # filter(Week == "Week 0") %>% # 41
+  # filter(Week == "Week 2") %>% # 11
+  # filter(Type2 == "W0 sputum (cure)") %>% #30
+  # filter(Type2 == "W2 sputum (cure)") %>% #7
+  # filter(Type2 == "W0 sputum (relapse)") %>% #11
+  # filter(Type2 == "W2 sputum (relapse)") %>% #4
+  nrow()
+# 52
 
