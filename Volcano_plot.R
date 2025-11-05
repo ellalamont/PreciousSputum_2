@@ -202,7 +202,7 @@ make_volcano_function_FDR_ogP <- function(my_df, graph_title, DE_limit) {
 }
 
 
-single_plot <- make_volcano_function_FDR_ogP(list_dfs_f2[[6]], df_names[6], DE_limit = 1)
+single_plot <- make_volcano_function_FDR_ogP(list_dfs_f2[[1]], df_names[1], DE_limit = 1)
 single_plot
 # ggsave(single_plot,
 #        file = paste0("W0.RelapseVsCure_AVG_PVALUE.pdf"),

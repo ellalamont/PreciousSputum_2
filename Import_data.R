@@ -302,6 +302,7 @@ setdiff(SputumSampleList60, SputumSampleList80)
 ###########################################################
 ############# TPM WITH <10TPM GENES REMOVED ###############
 # 11/4/25: Remove the genes with <10 TPM in any sample because they cannot be trusted!!
+# Need to save a list of this so I can remove them from other datasets
 
 # Not done yet!!
 
