@@ -37,7 +37,7 @@ ui <- fluidPage(
            # Add buttons for changing the log2fold threshold
            radioButtons("log2fc_threshold", 
                         label = "log2 fold change threshold", 
-                        choices = c("log2FC > abs(1)" = "1", "log2FC > abs(2)" = "2"),
+                        choices = c("log2FC > abs(1)" = "1", "log2FC > abs(2)" = "2", "Original p-value" = "3"),
                         selected = "1",
                         inline = TRUE),
           
@@ -114,7 +114,12 @@ server <- function(input, output, session) {
       label_col <- "DE2_labels"
       p_value <- "FDR_PVALUE"
       log2fc_cutoff <- 2
-    } 
+    } else if (input$log2fc_threshold == "3") {
+      de_col <- "DE1_ogP"
+      label_col <- "DE1_ogP_labels"
+      p_value <- "AVG_PVALUE"
+      log2fc_cutoff <- 1
+    }
     
     
     # Make the Volcano Plot

@@ -34,9 +34,6 @@ EllaGeneSets_2025.10.24 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.10.24.c
 ###########################################################
 ################### W2 Cure Vs W0 Cure ####################
 
-# TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure
-# (TAR = transcriptional antibiotic response)
-
 W2CureVsW0Cure_EllaGeneSets <- EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cure %>% 
   select(PathName, CellType, N_Genes, LOG2FOLD, AVG_PVALUE, AVG_RANK) %>%
   mutate(PathName = PathName %>%
@@ -84,7 +81,10 @@ my_bubblePlot
 
 
 
+###########################################################
+################ 11/5/25 W2 Relapse vs Cure ###############
 
+EllaGeneSets_2025.11.05 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.11.05.csv")
 
 
 

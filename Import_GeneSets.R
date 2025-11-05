@@ -42,9 +42,9 @@ allGeneSetList <- lapply(allGeneSetList, function(gset) {
 # SAVE AS RDA FOR LATER 
 # save(allGeneSets, file = "Data/GeneSet_Data/XXXGeneSets.rda")
 
-# EllaGeneSets_2025.10.24 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.10.24.csv")
-# allGeneSets <- split(EllaGeneSets_2025.10.24$Gene, EllaGeneSets_2025.10.24$GeneSet)
-# save(allGeneSets, file = "Data/GeneSet_Data/EllaGeneSets_2025.10.24.rda")
+# EllaGeneSets_2025.11.05 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.11.05.csv")
+# allGeneSets <- split(EllaGeneSets_2025.11.05$Gene, EllaGeneSets_2025.11.05$GeneSet)
+# save(allGeneSets, file = "Data/GeneSet_Data/EllaGeneSets_2025.11.05.rda")
 
 ###########################################################
 ############ iMODULONS: MAKE LISTS OF GROUPS ##############
