@@ -30,9 +30,9 @@ facet_themes <- theme(strip.background=element_rect(fill="white", linewidth = 0.
 ###########################################################
 ################### W2 Cure Vs W0 Cure ####################
 
-EllaGeneSets_2025.10.24 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.10.24.csv")
+EllaGeneSets_2025.11.05 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.11.05.csv")
 
-W2CureVsW0Cure_EllaGeneSets <- EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cure %>% 
+W2CureVsW0Cure_EllaGeneSets <- EllaGeneSets_2025.11.05_W2.cure.ComparedTo.W0.cure %>% 
   select(PathName, CellType, N_Genes, LOG2FOLD, AVG_PVALUE, AVG_RANK) %>%
   mutate(PathName = PathName %>%
            str_replace("<.*", "") %>%        # remove anything after <
@@ -41,7 +41,7 @@ W2CureVsW0Cure_EllaGeneSets <- EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cur
   mutate(PathName = str_wrap(PathName, width = 50)) %>%
   mutate(FDR.pvalue  = p.adjust(AVG_PVALUE, method = "fdr")) %>% 
   mutate(FDR_Significance = ifelse(FDR.pvalue < 0.05, "significant", "not significant")) %>%
-  left_join(EllaGeneSets_2025.10.24 %>% # Add the Group names
+  left_join(EllaGeneSets_2025.11.05 %>% # Add the Group names
               rename(PathName = GeneSet) %>%
               select(PathName, Group), by = "PathName")
 
@@ -56,7 +56,7 @@ W2CureVsW0Cure_EllaGeneSets <- EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cur
 my_bubblePlot <- W2CureVsW0Cure_EllaGeneSets %>%
   mutate(Group_wrapped = str_wrap(Group, width = 19)) %>%
   mutate(Group_wrapped = case_when(Group_wrapped == "Ribosomal proteins" ~ "Ribosomal\nproteins", Group_wrapped == "Hypoxia related" ~ "Hypoxia\nrelated", TRUE ~ Group_wrapped)) %>%
-  filter(Group != "Toxin/Antitoxin") %>% # Remove this because I don't think its interesting
+  filter(!Group %in% c("Toxin/Antitoxin", "ESX genes", "Metal", "Nucleic Acid", "Virulence/Persistence")) %>% # Remove this because I don't think its interesting
   mutate(PathName_2 = paste0(PathName, " (n=", N_Genes, ")")) %>%
   ggplot(aes(x = LOG2FOLD, y = PathName_2)) + 
   geom_point(aes(stroke = ifelse(FDR_Significance == "significant", 0.8, 0),
@@ -73,46 +73,10 @@ scale_x_continuous(limits = c(-4, 3.5), breaks = seq(-4, 3, 1)) +
   my_plot_themes + facet_themes + theme(legend.position = "none")
 my_bubblePlot
 # ggsave(my_bubblePlot,
-#        file = paste0("W2CureVsW0Cure_EllaGeneSets_2025.10.24", ".pdf"),
+#        file = paste0("W2CureVsW0Cure_EllaGeneSets_2025.11.05", ".pdf"),
 #        path = "Figures/Bubbles/EllaGeneSets",
 #        width = 8, height = 8, units = "in")
 
-
-# WITH THE SECOND GENE SETS - NEED TO GET FROM LENOVO FIRST!
-EllaGeneSets_2025.11.05 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.11.05.csv")
-
-W2CureVsW0Cure_EllaGeneSets <- XXXXXXX %>% 
-  select(PathName, CellType, N_Genes, LOG2FOLD, AVG_PVALUE, AVG_RANK) %>%
-  mutate(PathName = PathName %>%
-           str_replace("<.*", "") %>%        # remove anything after <
-           str_remove_all("&nbsp;") %>%      # remove all &nbsp;
-           str_trim()) %>%
-  mutate(PathName = str_wrap(PathName, width = 50)) %>%
-  mutate(FDR.pvalue  = p.adjust(AVG_PVALUE, method = "fdr")) %>% 
-  mutate(FDR_Significance = ifelse(FDR.pvalue < 0.05, "significant", "not significant")) %>%
-  left_join(EllaGeneSets_2025.11.05 %>% # Add the Group names
-              rename(PathName = GeneSet) %>%
-              select(PathName, Group), by = "PathName")
-
-my_bubblePlot <- W2CureVsW0Cure_EllaGeneSets %>%
-  mutate(Group_wrapped = str_wrap(Group, width = 19)) %>%
-  mutate(Group_wrapped = case_when(Group_wrapped == "Ribosomal proteins" ~ "Ribosomal\nproteins", Group_wrapped == "Hypoxia related" ~ "Hypoxia\nrelated", TRUE ~ Group_wrapped)) %>%
-  # filter(Group != "Toxin/Antitoxin") %>% # Remove this because I don't think its interesting
-  mutate(PathName_2 = paste0(PathName, " (n=", N_Genes, ")")) %>%
-  ggplot(aes(x = LOG2FOLD, y = PathName_2)) + 
-  geom_point(aes(stroke = ifelse(FDR_Significance == "significant", 0.8, 0),
-                 fill = case_when(FDR_Significance == "significant" & LOG2FOLD>0 ~ "pos",
-                                  FDR_Significance == "significant" & LOG2FOLD<0 ~ "neg",
-                                  TRUE ~ "ns")),
-             size = 4, shape = 21, alpha = 0.9) + 
-  scale_fill_manual(values = c("pos" = "#bb0c00", "neg" = "#00AFBB", "ns"  = "grey")) +
-  facet_grid(rows = vars(Group_wrapped), scales = "free_y", space = "free") + 
-  guides(shape = "none") + 
-  # scale_x_continuous(limits = c(-3.5, 3.5), breaks = seq(-3, 3, 1)) + 
-  geom_vline(xintercept = 0) + 
-  labs(title = "W2CureVsW0Cure (Run1-3)", y = NULL, x = "Log2Fold change") + 
-  my_plot_themes + facet_themes + theme(legend.position = "none")
-my_bubblePlot
 
 
 ###########################################################

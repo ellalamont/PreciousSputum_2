@@ -124,6 +124,6 @@ for (i in 1:length(list_dfs_f)) {
 
 # Specific gene sets I made
 TAR_Poonawala2024_W2.cure.ComparedTo.W0.cure <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W2.cure_TAR/W2_cure.MTb.MetaGeneSets.UP.txt")
-EllaGeneSets_2025.10.24_W2.cure.ComparedTo.W0.cure <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W2.cure_EllaGeneSets_2025.10.24/W2_cure.MTb.MetaGeneSets.UP.txt")
-EllaGeneSets_2025.11.05_W2.relapse.ComparedTo.W2.cure <- read.delim("Data/DE_Run1to3_60TxnCov/W2.cure_vs_W2.relapse_EllaGeneSets_2025.11.05/W2_relapse.MTb.MetaGeneSets.UP.txt")
+EllaGeneSets_2025.11.05_W2.cure.ComparedTo.W0.cure <- read.delim("Data/DE_Run1to3_60TxnCov/W0.cure_vs_W2.cure_EllaGeneSets_2025.11.05/W2_cure.MTb.MetaGeneSets.UP.txt")
+# EllaGeneSets_2025.11.05_W2.relapse.ComparedTo.W2.cure <- read.delim("Data/DE_Run1to3_60TxnCov/W2.cure_vs_W2.relapse_EllaGeneSets_2025.11.05/W2_relapse.MTb.MetaGeneSets.UP.txt") # THIS ONE NEEDS TO BE RE-DONE!
 

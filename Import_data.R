@@ -377,10 +377,11 @@ my_pipeSummary %>%
   filter(str_detect(SampleID, "W")) %>%
   # filter(Week == "Week 0") %>% # 41
   # filter(Week == "Week 2") %>% # 11
-  # filter(Type2 == "W0 sputum (cure)") %>% #30
+  filter(Type2 == "W0 sputum (cure)") %>% #30
   # filter(Type2 == "W2 sputum (cure)") %>% #7
   # filter(Type2 == "W0 sputum (relapse)") %>% #11
   # filter(Type2 == "W2 sputum (relapse)") %>% #4
-  nrow()
+  # nrow()
+  pull(SampleID)
 # 52
 

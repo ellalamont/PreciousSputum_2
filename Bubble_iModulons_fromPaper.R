@@ -55,7 +55,7 @@ W0CureVsRa_iModulons <- MetaGeneSets_W0.cure.ComparedTo.Ra %>%
 
 # Make code simple by using my_df
 my_df <- W0CureVsRa_iModulons
-my_title <- "W0CureVsRa_iModulons"
+my_title <- "W0CureVsRa_iModulons Run1-3 60P TxnCov"
 
 Fav_Pathways <- my_df %>% 
   filter(str_detect(PathName, iModulons_of_interest_pattern)) %>%

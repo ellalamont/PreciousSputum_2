@@ -1,6 +1,7 @@
 # Compare gene sets involved in antibiotic responses
 # E. Lamont
 # 10/13/25
+# 11/10/25 changed to be with the >60% txn cov genes run 1-3
 
 # Gene sets were from:
 # Poonawala et al. (2024)  Transcriptomic responses to antibiotic exposure in Mycobacterium tuberculosis
