@@ -12,7 +12,7 @@ source("Import_data.R")
 ###########################################################
 ###################### PROCESS DATA #######################
 
-my_tpm <- GoodSamples80_tpmf %>% select(-contains("THP1"))
+my_tpm <- GoodSamples60_tpmf %>% select(-contains("THP1"))
 
 ###########################################################
 ######################## PHEATMAP #########################
@@ -24,7 +24,7 @@ testing <- my_tpm %>% subset(rownames(my_tpm) %in% allGeneSetList[["MTb.TB.Pheno
 # pheatmap(testing, scale = "row")
 
 # Grab the columns needed to give colors
-my_pipeSummary <- GoodSamples80_pipeSummary %>%
+my_pipeSummary <- GoodSamples60_pipeSummary %>%
   filter(SampleID2 %in% colnames(testing)) %>%
   select(SampleID2, Type2) %>%
   column_to_rownames("SampleID2")
@@ -41,11 +41,6 @@ my_annotation_colors <- list(
             "Broth" = "#999999")
 )
 
-pheatmap(testing, 
-         annotation_col = GoodSamples80_pipeSummary["Type2"], # Doesn't work
-         annotation_colors = my_annotation_colors,
-         scale = "row",
-         cutree_cols = 5)
 
 pheatmap(testing, 
          annotation_col = my_pipeSummary, 

@@ -28,13 +28,16 @@ my_annotation_colors <- list(
             "Broth" = "#999999")
 )
 
-my_tpm <- GoodSamples80_tpmf %>% select(-contains("THP1"))
+my_tpm <- GoodSamples60_tpmf %>% select(-contains("THP1"))
 
-my_pipeSummary <- GoodSamples80_pipeSummary %>%
+my_pipeSummary <- GoodSamples60_pipeSummary %>%
   # filter(SampleID2 %in% colnames(testing)) %>%
   filter(Type2 != "THP1 spiked") %>%
   select(SampleID2, Type2) %>%
   column_to_rownames("SampleID2")
+
+# Reorder annotation rows to match columns of tpm file
+my_pipeSummary <- my_pipeSummary[colnames(my_tpm), , drop = FALSE]
 
 # Define UI ----
 ui <- fluidPage(
