@@ -23,6 +23,7 @@ library(ggfortify) # To make pca plots with plotly
 library(edgeR) # for cpm
 library(sva) # For ComBat_seq batch correction
 library(stringr)
+library(readxl) # To import excel files as dataframes
 
 # DuffyTools
 # library(devtools)
@@ -313,8 +314,6 @@ setdiff(SputumSampleList60, SputumSampleList80)
 ###########################################################
 ##################### SUMMARY NUMBERS #####################
 
-
-
 # Number of sputum samples with > 1 million reads
 my_pipeSummary %>%
   filter(N_Genomic >= 1000000) %>% 
@@ -384,4 +383,15 @@ my_pipeSummary %>%
   # nrow()
   pull(SampleID)
 # 52
+
+
+
+
+
+
+
+
+
+
+
 
