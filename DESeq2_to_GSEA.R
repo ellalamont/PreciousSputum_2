@@ -14,11 +14,11 @@ source("Import_data.R") # GoodSamples80_RawReadsf, GoodSamples80_pipeSummary
 # https://introtogenomics.readthedocs.io/en/latest/2021.11.11.DeseqTutorial.html
 # https://rnabio.org/module-03-expression/0003/03/03/Differential_Expression-DESeq2/
 
-if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-pkgs <- c("DESeq2","sva","fgsea","clusterProfiler","GSEABase","tidyverse","pheatmap")
-for (p in pkgs) {
-  if (!requireNamespace(p, quietly = TRUE)) BiocManager::install(p, ask=FALSE)
-}
+# if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+# pkgs <- c("DESeq2","sva","fgsea","clusterProfiler","GSEABase","tidyverse","pheatmap")
+# for (p in pkgs) {
+#   if (!requireNamespace(p, quietly = TRUE)) BiocManager::install(p, ask=FALSE)
+# }
 library(DESeq2)
 library(sva) # ComBat_seq
 library(fgsea)
@@ -117,7 +117,10 @@ my_volcano_annotated <- my_volcano +
   annotate("label", x = (x_min-1)/2, y = y_max - 0.1, label = paste0(text_down, " genes"), color = "#00AFBB", fontface = "bold", fill = "transparent", label.size = 0.3)
 final_volcano <- my_volcano_annotated + my_plot_themes
 final_volcano
-
+ggsave(final_volcano,
+       file = "W2.cure.ComparedTo.W0.cure_DESeq2_Run1to3.pdf",
+       path = "Figures/Volcano_60TxnCov/DESeq2_ByHand",
+       width = 7, height = 5, units = "in")
 
 ################################################
 ##################### GSEA #####################

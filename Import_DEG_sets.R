@@ -105,6 +105,11 @@ for (i in 1:length(list_dfs_f)) {
   current_df$DE1_ogP <- ifelse(current_df$LOG2FOLD < -1 & current_df$AVG_PVALUE < 0.05, "significant down", ifelse(current_df$LOG2FOLD > 1 & current_df$AVG_PVALUE < 0.05, "significant up", "not significant"))
   current_df$DE1_ogP <- factor(current_df$DE1_ogP, levels = ordered_DE)
   current_df$DE1_ogP_labels <- ifelse(current_df$DE1_ogP != "not significant", current_df$GENE_NAME, NA)
+  
+  # Columns for Log2Fold > 2 and AVG_PVALUE < 0.05
+  current_df$DE2_ogP <- ifelse(current_df$LOG2FOLD < -2 & current_df$AVG_PVALUE < 0.05, "significant down", ifelse(current_df$LOG2FOLD > 2 & current_df$AVG_PVALUE < 0.05, "significant up", "not significant"))
+  current_df$DE2_ogP <- factor(current_df$DE2_ogP, levels = ordered_DE)
+  current_df$DE2_ogP_labels <- ifelse(current_df$DE2_ogP != "not significant", current_df$GENE_NAME, NA)
 
   list_dfs_f2[[current_df_name]] <- current_df
 }

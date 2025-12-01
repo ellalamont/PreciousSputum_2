@@ -15,11 +15,11 @@ source("Import_GeneSets.R")
 # https://introtogenomics.readthedocs.io/en/latest/2021.11.11.DeseqTutorial.html
 # https://rnabio.org/module-03-expression/0003/03/03/Differential_Expression-DESeq2/
 
-if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-pkgs <- c("DESeq2","sva","fgsea","clusterProfiler","GSEABase","tidyverse","pheatmap", "apeglm")
-for (p in pkgs) {
-  if (!requireNamespace(p, quietly = TRUE)) BiocManager::install(p, ask=FALSE)
-}
+# if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+# pkgs <- c("DESeq2","sva","fgsea","clusterProfiler","GSEABase","tidyverse","pheatmap", "apeglm")
+# for (p in pkgs) {
+#   if (!requireNamespace(p, quietly = TRUE)) BiocManager::install(p, ask=FALSE)
+# }
 library(DESeq2)
 library(sva) # ComBat_seq
 library(fgsea)

@@ -158,7 +158,7 @@ single_plot
 ###########################################################
 ########## FUNCTION FOR VOLCANO ORIGINAL P_VALUE ##########
 
-make_volcano_function_FDR_ogP <- function(my_df, graph_title, DE_limit) {
+make_volcano_function_ogP <- function(my_df, graph_title, DE_limit) {
   
   ## Make a volcano plot using output from Bob's pipeline
   ## Original p-values
@@ -168,8 +168,8 @@ make_volcano_function_FDR_ogP <- function(my_df, graph_title, DE_limit) {
     my_DE_col <- "DE1_ogP"
     my_DE_label <- "DE1_ogP_labels"
   } else if (DE_limit == 2) {
-    my_DE_col <- "DE2"
-    my_DE_label <- "DE2_labels"
+    my_DE_col <- "DE2_ogP"
+    my_DE_label <- "DE2_ogP_labels"
   }
   
   my_volcano <- my_df %>%
@@ -202,13 +202,20 @@ make_volcano_function_FDR_ogP <- function(my_df, graph_title, DE_limit) {
 }
 
 
-single_plot <- make_volcano_function_FDR_ogP(list_dfs_f2[[1]], df_names[1], DE_limit = 1)
+single_plot <- make_volcano_function_ogP(list_dfs_f2[[3]], df_names[3], DE_limit = 2)
 single_plot
-# ggsave(single_plot,
-#        file = paste0("W0.RelapseVsCure_AVG_PVALUE.pdf"),
-#        path = "Figures/Volcano",
-#        width = 7, height = 5, units = "in")
 
 
+# Loop for all the volcanos
+my_path <- "Figures/Volcano_60TxnCov/Log2Fold2_AVG_PVALUE"
+for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
+  current_df_name <- df_names[i]
+  filename <- paste0(current_df_name, "_f_AVG_PVALUE_Run1to3.pdf")
+  my_plot <- make_volcano_function_ogP(list_dfs_f2[[i]], df_names[i], 2) ## USING FILTERED DATA ##
+  ggsave(my_plot,
+         file = filename,
+         path = my_path,
+         width = 7, height = 5, units = "in")
+}
 
 
