@@ -78,6 +78,55 @@ my_bubblePlot
 #        width = 8, height = 8, units = "in")
 
 
+###########################################################
+############# 12/2/25 W2 Cure Vs W0 Cure ogP ##############
+
+EllaGeneSets_2025.11.05 <- read.csv("Data/GeneSet_Data/EllaGeneSets_2025.11.05.csv")
+
+W2CureVsW0Cure_EllaGeneSets <- EllaGeneSets_2025.11.05_W2.cure.ComparedTo.W0.cure %>% 
+  dplyr::select(PathName, CellType, N_Genes, LOG2FOLD, AVG_PVALUE, AVG_RANK) %>%
+  mutate(PathName = PathName %>%
+           str_replace("<.*", "") %>%        # remove anything after <
+           str_remove_all("&nbsp;") %>%      # remove all &nbsp;
+           str_trim()) %>%
+  mutate(PathName = str_wrap(PathName, width = 50)) %>%
+  mutate(og_Significance = ifelse(AVG_PVALUE < 0.05, "significant", "not significant")) %>%
+  left_join(EllaGeneSets_2025.11.05 %>% # Add the Group names
+              rename(PathName = GeneSet) %>%
+              dplyr::select(PathName, Group), by = "PathName")
+
+# Add the Virulence/persistence iModulons
+# source("Bubble_iModulons_all.R")
+# VP_iModulons_W2CureVsW0Cure <- W2CureVsW0Cure_iModulons %>%
+#   filter(iModulonCategory == "Virulence_Persistence") %>%
+#   rename(Group = iModulonCategory)
+# W2CureVsW0Cure_EllaGeneSets <- merge(W2CureVsW0Cure_EllaGeneSets, VP_iModulons_W2CureVsW0Cure, all = T)
+
+# Make the bubble plot
+my_bubblePlot <- W2CureVsW0Cure_EllaGeneSets %>%
+  mutate(Group_wrapped = str_wrap(Group, width = 19)) %>%
+  mutate(Group_wrapped = case_when(Group_wrapped == "Ribosomal proteins" ~ "Ribosomal\nproteins", Group_wrapped == "Hypoxia related" ~ "Hypoxia\nrelated", TRUE ~ Group_wrapped)) %>%
+  filter(!Group %in% c("Toxin/Antitoxin", "ESX genes", "Metal", "Nucleic Acid")) %>% # Remove this because I don't think its interesting
+  mutate(PathName_2 = paste0(PathName, " (n=", N_Genes, ")")) %>%
+  ggplot(aes(x = LOG2FOLD, y = PathName_2)) + 
+  geom_point(aes(stroke = ifelse(og_Significance == "significant", 0.8, 0),
+                 fill = case_when(og_Significance == "significant" & LOG2FOLD>0 ~ "pos",
+                                  og_Significance == "significant" & LOG2FOLD<0 ~ "neg",
+                                  TRUE ~ "ns")),
+             size = 4, shape = 21, alpha = 0.9) + 
+  scale_fill_manual(values = c("pos" = "#bb0c00", "neg" = "#00AFBB", "ns"  = "grey")) +
+  facet_grid(rows = vars(Group_wrapped), scales = "free_y", space = "free") + 
+  guides(shape = "none") + 
+  scale_x_continuous(limits = c(-4, 3.5), breaks = seq(-4, 3, 1)) + 
+  geom_vline(xintercept = 0) + 
+  labs(title = "W2CureVsW0Cure (Run1-3); p-values NOT adjusted", y = NULL, x = "Log2Fold change") + 
+  my_plot_themes + facet_themes + theme(legend.position = "none")
+my_bubblePlot
+# ggsave(my_bubblePlot,
+#        file = paste0("W2CureVsW0Cure_EllaGeneSets_2025.11.05_ogP", ".pdf"),
+#        path = "Figures/Bubbles/EllaGeneSets",
+#        width = 8, height = 8, units = "in")
+
 
 ###########################################################
 ################ 11/5/25 W2 Relapse vs Cure ###############
