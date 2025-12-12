@@ -207,15 +207,24 @@ single_plot
 
 
 # Loop for all the volcanos
-my_path <- "Figures/Volcano_60TxnCov/Log2Fold2_AVG_PVALUE"
+# my_path <- "Figures/Volcano_60TxnCov/Log2Fold2_AVG_PVALUE"
+# for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
+#   current_df_name <- df_names[i]
+#   filename <- paste0(current_df_name, "_f_AVG_PVALUE_Run1to3.pdf")
+#   my_plot <- make_volcano_function_ogP(list_dfs_f2[[i]], df_names[i], 2) ## USING FILTERED DATA ##
+#   ggsave(my_plot,
+#          file = filename,
+#          path = my_path,
+#          width = 7, height = 5, units = "in")
+# }
+
+my_path <- "Figures/Volcano_60TxnCov/Log2Fold1_AVG_PVALUE"
 for (i in 1:length(list_dfs_f2)) { ## USING FILTERED DATA ##
   current_df_name <- df_names[i]
   filename <- paste0(current_df_name, "_f_AVG_PVALUE_Run1to3.pdf")
-  my_plot <- make_volcano_function_ogP(list_dfs_f2[[i]], df_names[i], 2) ## USING FILTERED DATA ##
+  my_plot <- make_volcano_function_ogP(list_dfs_f2[[i]], df_names[i], 1) ## USING FILTERED DATA ##
   ggsave(my_plot,
          file = filename,
          path = my_path,
          width = 7, height = 5, units = "in")
 }
-
-
