@@ -1,7 +1,7 @@
 # Import all the data sheets I got via Email about the sputum samples
 # 7/29/25
 
-source("Import_data.R")
+# source("Import_data.R")
 
 library(readxl)
 
@@ -53,7 +53,7 @@ Exp_metadata_3 <- Exp_metadata_3 %>% mutate(Patient = paste0("P_", SUBJID))
 ###########################################################
 ##################### SUBSET COLUMNS ######################
 
-my_metadata <- Exp_metadata_3 %>% select(outcome, arm, Visit, Age, SEX, TBprev, BMI, Weight, CurrentSmoker, PrevSmoker, SmokeDuration, TTD, XpertCT_wk0, Patient)
+my_metadata <- Exp_metadata_3 %>% select(outcome, arm, Visit, Age, SEX, TBprev, BMI, Weight, CurrentSmoker, PrevSmoker, SmokeDuration, TTD, XpertCT_wk0, Patient) %>% rename(Arm = arm)
 
 
 

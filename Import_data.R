@@ -254,6 +254,14 @@ All_pipeSummary$AtLeast.10.Reads_f <- NumGoodReads[All_pipeSummary$SampleID2]
 # Add transcriptional coverage
 All_pipeSummary <- All_pipeSummary %>% mutate(Txn_Coverage_f = round(AtLeast.10.Reads_f/4030*100))
 
+###########################################################
+#################### ADD ARM INFORMATION ##################
+# 12/15/25
+
+source("Import_SampleMetadata.R")
+
+All_pipeSummary <- All_pipeSummary %>% select(-Arm) %>%
+  left_join(my_metadata %>% filter(Visit == "Day 0") %>% select(Patient, Arm), by = "Patient")
 
 ###########################################################
 ########### LIST OF SAMPLES PASSING INSPECTION ############
