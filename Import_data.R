@@ -379,17 +379,17 @@ my_pipeSummary %>%
 
 # Number of sputum samples with > 1 million reads and >60% txn coverage
 my_pipeSummary %>%
-  filter(N_Genomic >= 1000000) %>% 
+  # filter(N_Genomic >= 1000000) %>% 
   filter(Txn_Coverage_f >=60) %>%
   filter(str_detect(SampleID, "W")) %>%
   # filter(Week == "Week 0") %>% # 41
-  # filter(Week == "Week 2") %>% # 11
-  filter(Type2 == "W0 sputum (cure)") %>% #30
+  filter(Week == "Week 2") %>% # 11
+  # filter(Type2 == "W0 sputum (cure)") %>% #30
   # filter(Type2 == "W2 sputum (cure)") %>% #7
   # filter(Type2 == "W0 sputum (relapse)") %>% #11
   # filter(Type2 == "W2 sputum (relapse)") %>% #4
-  # nrow()
-  pull(SampleID)
+  nrow()
+  # pull(SampleID)
 # 52
 
 
