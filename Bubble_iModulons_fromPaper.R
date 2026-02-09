@@ -55,7 +55,7 @@ W0CureVsRa_iModulons <- MetaGeneSets_W0.cure.ComparedTo.Ra %>%
 
 # Make code simple by using my_df
 my_df <- W0CureVsRa_iModulons
-my_title <- "W0CureVsRa_iModulons Run1-3 60P TxnCov"
+my_title <- "W0CureVsRa_iModulons Run1-3 1M 60TxnCov"
 
 Fav_Pathways <- my_df %>% 
   filter(str_detect(PathName, iModulons_of_interest_pattern)) %>%
@@ -101,6 +101,76 @@ my_bubblePlot
 #        file = paste0(my_title, ".pdf"),
 #        path = "Figures/Bubbles/iModulons/fromPaper",
 #        width = 6, height = 7, units = "in")
+
+
+###########################################################
+################## R21: W0 Cure Vs Ra #####################
+# 2/8/26
+
+W0CureVsRa_iModulons <- MetaGeneSets_W0.cure.ComparedTo.Ra %>% 
+  filter(str_detect(PathName, "iModulons")) %>% 
+  filter(!str_detect(PathName, "ISB.Corems")) %>%
+  # filter(LOG2FOLD >= 0) %>% 
+  mutate(PathName = PathName %>%
+           str_replace("iModulons: ", "") %>%
+           str_replace("<.*", "") %>%        # remove anything after <
+           str_remove_all("&nbsp;") %>%      # remove all &nbsp;
+           str_replace(":.*", "") %>% 
+           str_trim())  %>%
+  select(PathName, CellType, N_Genes, LOG2FOLD, AVG_PVALUE, AVG_RANK) %>%
+  mutate(FDR.pvalue  = p.adjust(AVG_PVALUE, method = "fdr")) %>% 
+  mutate(PathName = str_wrap(PathName, width = 50)) %>%
+  mutate(FDR_Significance = ifelse(FDR.pvalue < 0.05, "significant", "not significant"))
+
+# Make code simple by using my_df
+my_df <- W0CureVsRa_iModulons
+my_title <- "W0CureVsRa_iModulons Run1-3 1M 60TxnCov"
+
+Fav_Pathways <- my_df %>% 
+  filter(str_detect(PathName, iModulons_of_interest_pattern)) %>%
+  pull(PathName)
+
+# Put them in my own pathway labels
+my_df2 <- my_df %>%
+  mutate(iModulonCategory2 = case_when(
+    str_detect(PathName, "DevR") ~ "DosR",
+    str_detect(PathName, paste(Growth_iModulons_pattern, NucleicAcid_iModulons_pattern, Redox_iModulons_pattern, AminoAcid_iModulons_pattern, sep = "|")) ~ "Growth",
+    str_detect(PathName, Metal_iModulons_pattern) ~ "Metal",
+    str_detect(PathName, Virulence.Persistence_iModulons_pattern) ~ "Virulence and Persistence",
+    str_detect(PathName, paste(CentralCarbon_iModulons_pattern, FattyAcid.Cholesterol_iModulons_pattern, sep = "|")) ~ "Fatty Acid and Cholesterol",
+    TRUE ~ "Other"
+  )) %>%
+  mutate(iModulonCategory2 = factor(iModulonCategory2, levels = c("Fatty Acid and Cholesterol", "Growth", "DosR", "Metal","Virulence and Persistence", "Other")))
+
+# Make the bubble plot
+my_bubblePlot <- my_df2 %>%
+  filter(PathName %in% Fav_Pathways) %>%
+  filter(iModulonCategory2 != "Virulence and Persistence") %>% 
+  filter(iModulonCategory2 != "DosR") %>% # Not putting this in the R21 graph
+  filter(!str_detect(PathName, "WhiB4/IdeR")) %>% # To remove this iModulon which is tagging along with IdeR iModulon
+  filter(N_Genes >=3) %>% 
+  mutate(PathName_2 = paste0(PathName, " (n=", N_Genes, ")")) %>%
+  ggplot(aes(x = LOG2FOLD, y = PathName_2)) + 
+  geom_point(aes(stroke = ifelse(FDR_Significance == "significant", 0.8, 0),
+                 fill = case_when(FDR_Significance == "significant" & LOG2FOLD>0 ~ "pos",
+                                  FDR_Significance == "significant" & LOG2FOLD<0 ~ "neg",
+                                  TRUE ~ "ns")),
+             size = 4, shape = 21, alpha = 0.8) + 
+  scale_fill_manual(
+    values = c("pos" = "#bb0c00", 
+               "neg" = "#00AFBB", 
+               "ns"  = "grey")) +
+  facet_grid(rows = vars(iModulonCategory2), scales = "free_y", space = "free") + 
+  guides(shape = "none") + 
+  scale_x_continuous(limits = c(-2, 4), breaks = seq(-2, 4, 1)) + 
+  geom_vline(xintercept = 0) + 
+  labs(title = my_title, y = NULL, x = "Log2Fold change") + 
+  my_plot_themes + facet_themes + theme(legend.position = "none")
+my_bubblePlot
+ggsave(my_bubblePlot,
+       file = paste0(my_title, "_R21.png"),
+       path = "Figures/Bubbles/iModulons/fromPaper",
+       width = 5, height = 4.5, units = "in")
 
 
 ###########################################################

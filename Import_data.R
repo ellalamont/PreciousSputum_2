@@ -392,7 +392,15 @@ my_pipeSummary %>%
   # pull(SampleID)
 # 52
 
+my_pipeSummary %>% 
+  group_by(Type2) %>%
+  summarise(n = n())
 
+my_pipeSummary %>% 
+  # filter(N_Genomic > 1000000) %>%
+  filter(Txn_Coverage_f >=60) %>% 
+  group_by(Type2) %>%
+  summarise(n = n())
 
 
 ###########################################################
