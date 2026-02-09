@@ -25,10 +25,10 @@ my_plot_themes <- theme_bw() +
 ################ COLLECT DATA OF INTEREST #################
 
 # Collecting all the duplicates between the two runs
-Run1_Subset <- Run1_tpm %>% select(X, THP1_1e6_1_S67, W0_12043_S32, W0_12082_S45, W0_13094_S46, W0_14136_S52, W0_15072_S48, W0_15083_S50) %>%
-  rename(Gene = X, Run1_THP1.Ra1e6 = THP1_1e6_1_S67, Run1_W0_12043 = W0_12043_S32, Run1_W0_12082 = W0_12082_S45,Run1_W0_13094 = W0_13094_S46,  Run1_W0_14136 = W0_14136_S52, Run1_W0_15072 = W0_15072_S48, Run1_W0_15083 = W0_15083_S50)
-Run2_Subset <- Run2_tpm %>% select(X, THP1_1e6_1_S44, W0_12043_S45, W0_12082_S46, W0_13094_S47, W0_14136_S50, W0_15072_S48, W0_15083_S49) %>%
-  rename(Gene = X, Run2_THP1.Ra1e6 = THP1_1e6_1_S44, Run2_W0_12043 = W0_12043_S45, Run2_W0_12082 = W0_12082_S46, Run2_W0_13094 = W0_13094_S47, Run2_W0_14136 = W0_14136_S50, Run2_W0_15072 = W0_15072_S48, Run2_W0_15083 = W0_15083_S49)
+Run1_Subset <- Run1_tpm %>% select(X, Run1_THP1_1e6_1_S67, Run1_W0_12043_S32, Run1_W0_12082_S45, Run1_W0_13094_S46, Run1_W0_14136_S52, Run1_W0_15072_S48, Run1_W0_15083_S50) %>%
+  rename(Gene = X, Run1_THP1.Ra1e6 = Run1_THP1_1e6_1_S67, Run1_W0_12043 = Run1_W0_12043_S32, Run1_W0_12082 = Run1_W0_12082_S45, Run1_W0_13094 = Run1_W0_13094_S46,  Run1_W0_14136 = Run1_W0_14136_S52, Run1_W0_15072 = Run1_W0_15072_S48, Run1_W0_15083 = Run1_W0_15083_S50)
+Run2_Subset <- Run2_tpm %>% select(X, Run2_THP1_1e6_1_S44, Run2_W0_12043_S45, Run2_W0_12082_S46, Run2_W0_13094_S47, Run2_W0_14136_S50, Run2_W0_15072_S48, Run2_W0_15083_S49) %>%
+  rename(Gene = X, Run2_THP1.Ra1e6 = Run2_THP1_1e6_1_S44, Run2_W0_12043 = Run2_W0_12043_S45, Run2_W0_12082 = Run2_W0_12082_S46, Run2_W0_13094 = Run2_W0_13094_S47, Run2_W0_14136 = Run2_W0_14136_S50, Run2_W0_15072 = Run2_W0_15072_S48, Run2_W0_15083 = Run2_W0_15083_S49)
 
 merged_DoubleRun <- merge(Run1_Subset, Run2_Subset, all = T)
 

@@ -399,14 +399,14 @@ my_pipeSummary %>%
 ##################### EXPORT TPM INFO #####################
 # 12/10/25 for Jason Yang
 
-GoodSputum60_tpmf <- GoodSamples60_tpmf %>% select(contains("W"))
-GoodSputum60_pipeSummary <- GoodSamples60_pipeSummary %>% filter(SampleID2 %in% colnames(GoodSputum60_tpmf))
-
-# Clean up the names
-names(GoodSputum60_tpmf) <- sub("^Run[0-9]+_", "", names(GoodSputum60_tpmf))
-GoodSputum60_pipeSummary$SampleID <- gsub(pattern = "_S[0-9]+$", replacement = "", x = GoodSputum60_pipeSummary$SampleID)
-GoodSputum60_Metadata <- GoodSputum60_pipeSummary %>% select(SampleID, Week, Patient, Outcome, Type2)
-
-# Save as csv
-write.csv(GoodSputum60_tpmf, "Data/ForJasonYang/SputumTPM_20251210.csv")
-write.csv(GoodSputum60_Metadata, "Data/ForJasonYang/SputumMetadata_20251210.csv")
+# GoodSputum60_tpmf <- GoodSamples60_tpmf %>% select(contains("W"))
+# GoodSputum60_pipeSummary <- GoodSamples60_pipeSummary %>% filter(SampleID2 %in% colnames(GoodSputum60_tpmf))
+# 
+# # Clean up the names
+# names(GoodSputum60_tpmf) <- sub("^Run[0-9]+_", "", names(GoodSputum60_tpmf))
+# GoodSputum60_pipeSummary$SampleID <- gsub(pattern = "_S[0-9]+$", replacement = "", x = GoodSputum60_pipeSummary$SampleID)
+# GoodSputum60_Metadata <- GoodSputum60_pipeSummary %>% select(SampleID, Week, Patient, Outcome, Type2)
+# 
+# # Save as csv
+# write.csv(GoodSputum60_tpmf, "Data/ForJasonYang/SputumTPM_20251210.csv")
+# write.csv(GoodSputum60_Metadata, "Data/ForJasonYang/SputumMetadata_20251210.csv")
