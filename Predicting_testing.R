@@ -14,6 +14,7 @@ source("Import_data.R")
 library(caret)
 # install.packages("glmnet")
 library(glmnet)
+library(pROC)
 
 
 ###########################################################
@@ -47,16 +48,20 @@ train <- my_df[trainIndex,]
 test <- my_df[-trainIndex,]
 
 # Create matrices for glmnet
-x_train <- as.matrix(train[, !names(train) %in% c("SampleID", "Outcome")]) # matrix of predictor variables
+x_train <- train %>%
+  select(-SampleID2, -Outcome) %>%
+  as.matrix() # matrix of predictor variables
 # y_train <- train$Outcome # the response or outcome variable, which is a binary variable.
 y_train <- ifelse(train$Outcome == "Relapse", 1, 0)
-x_test <- as.matrix(test[, !names(test) %in% c("SampleID", "Outcome")]) 
+x_test <- test %>%
+  select(-SampleID2, -Outcome) %>%
+  as.matrix()
 # y_test <- test$Outcome 
 y_test <- ifelse(test$Outcome == "Relapse", 1, 0)
 
-# Stratify cross-validation inside glmnet??
-# set.seed(42)
-# folds <- createFolds(y_train, k = 5, list = F)
+# Check for NAs
+sum(is.na(x_train)) # 0
+sum(is.na(x_test)) # 0
 
 
 # https://www.sthda.com/english/articles/36-classification-methods-essentials/149-penalized-logistic-regression-essentials-in-r-ridge-lasso-and-elastic-net/
@@ -64,22 +69,28 @@ y_test <- ifelse(test$Outcome == "Relapse", 1, 0)
 # Find the best lambda using cross-validation
 # lamba: a numeric value defining the amount of shrinkage. Should be specify by analyst.
 set.seed(42)
-cv.lasso <- cv.glmnet(x_train, y_train, alpha = 1, family = "binomial")
+cv.lasso <- cv.glmnet(x_train, y_train, alpha = 1, family = "binomial", type.measure = "deviance", nfolds = 5) # Needs to be deviance because the sample size is so small
 # Warning messages:
 # 1: In lognet(x, is.sparse, y, weights, offset, alpha, nobs,  ... :
 #                one multinomial or binomial class has fewer than 8  observations; dangerous ground
+
 plot(cv.lasso)
 cv.lasso$lambda.min 
-cv.lasso$lambda.1se 
+cv.lasso$lambda.1se # Recommended for small n?
 
 
-# coef(cv.lasso, cv.lasso$lambda.min) # There are too many to see anything with this....
+coef(cv.lasso, cv.lasso$lambda.1se) # There are too many to see anything with this....
 
 
 # Fit the final model on the training data
-lasso.model <- glmnet(x_train, y_train, alpha = 1, family = "binomial", lambda = cv.lasso$lambda.min)
-# Warning message:
-#   In storage.mode(x) <- "double" : NAs introduced by coercion
+lasso.model <- glmnet(x_train, y_train, alpha = 1, family = "binomial", lambda = cv.lasso$lambda.1se)
+
+# 1/5/26
+probs <- predict(lasso.model, newx = x_test, type = "response")
+roc_obj <- roc(response = y_test, predictor = as.numeric(probs))
+auc(roc_obj)
+plot(roc_obj, print.auc = TRUE)
+
 
 # Make prediction on test data
 probabilities <- lasso.model %>% predict(newx = x_test)
@@ -103,6 +114,100 @@ predicted.classes <- ifelse(probabilities > 0.5, "pos", "neg")
 observed.classes <- test.data$diabetes
 mean(predicted.classes == observed.classes)
 
+
+###########################################################
+################## W0 USE MONTE CARLO AUC #################
+#1/5/26
+# Done by ChatGPT!
+
+set.seed(42)
+
+n_repeats <- 200
+auc_values <- numeric(n_repeats)
+
+for (i in seq_len(n_repeats)) {
+  
+  idx <- createDataPartition(my_df$Outcome, p = 0.8, list = FALSE)
+  
+  train <- my_df[idx, ]
+  test  <- my_df[-idx, ]
+  
+  x_train <- as.matrix(train %>% select(-SampleID2, -Outcome))
+  y_train <- ifelse(train$Outcome == "Relapse", 1, 0)
+  
+  x_test <- as.matrix(test %>% select(-SampleID2, -Outcome))
+  y_test <- ifelse(test$Outcome == "Relapse", 1, 0)
+  
+  # Tune lambda by deviance
+  cvfit <- cv.glmnet(
+    x_train,
+    y_train,
+    family = "binomial",
+    alpha = 1
+  )
+  
+  model <- glmnet(
+    x_train,
+    y_train,
+    family = "binomial",
+    alpha = 1,
+    lambda = cvfit$lambda.1se
+  )
+  
+  probs <- predict(model, x_test, type = "response")
+  
+  roc_obj <- roc(y_test, as.numeric(probs), quiet = TRUE)
+  auc_values[i] <- auc(roc_obj)
+}
+
+mean(auc_values)
+quantile(auc_values, c(0.025, 0.975))
+
+
+# Permutation test - Randomly choses which samples are relapses.
+set.seed(42)
+n_perm <- 500
+perm_auc <- numeric(n_perm)
+for (i in seq_len(n_perm)) {
+  
+  idx <- createDataPartition(my_df$Outcome, p = 0.8, list = FALSE)
+  
+  train <- my_df[idx, ]
+  test  <- my_df[-idx, ]
+  
+  x_train <- as.matrix(train %>% select(-SampleID2, -Outcome))
+  y_train <- ifelse(train$Outcome == "Relapse", 1, 0)
+  
+  x_test <- as.matrix(test %>% select(-SampleID2, -Outcome))
+  y_test <- ifelse(test$Outcome == "Relapse", 1, 0)
+  
+  # 🔀 permute labels ONLY in training
+  y_perm <- sample(y_train)
+  
+  cvfit <- cv.glmnet(
+    x_train,
+    y_perm,
+    family = "binomial",
+    alpha = 1
+  )
+  
+  model <- glmnet(
+    x_train,
+    y_perm,
+    family = "binomial",
+    alpha = 1,
+    lambda = cvfit$lambda.1se
+  )
+  
+  probs <- predict(model, x_test, type = "response")
+  
+  roc_obj <- roc(y_test, as.numeric(probs), quiet = TRUE)
+  perm_auc[i] <- auc(roc_obj)
+}
+mean(perm_auc)
+
+p_value <- mean(perm_auc >= mean(auc_values))
+p_value
 
 ###########################################################
 ################## WEEK 2 - ALL SAMPLES ###################
