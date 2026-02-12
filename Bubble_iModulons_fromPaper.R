@@ -16,16 +16,16 @@ my_plot_themes <- theme_bw() +
   theme(legend.position = "right",legend.text=element_text(size=7),
         legend.title = element_text(size = 7),
         plot.title = element_text(size=7), 
-        axis.title.x = element_text(size=7), 
-        axis.text.x = element_text(angle = 0, size=7, vjust=0, hjust=0.5),
+        axis.title.x = element_text(size=10), 
+        axis.text.x = element_text(angle = 0, size=10, vjust=0, hjust=0.5),
         # axis.text.x = element_text(angle = 45, size=7, vjust=1, hjust=1),
         axis.title.y = element_text(size=7),
-        axis.text.y = element_text(size=7), 
+        axis.text.y = element_text(size=10), 
         plot.subtitle = element_text(size=7)# , 
         # plot.margin = margin(10, 10, 10, 20)# ,
   )
 facet_themes <- theme(strip.background=element_rect(fill="white", linewidth = 0.9),
-                      strip.text = element_text(size = 7))
+                      strip.text = element_text(size = 10))
 
 
 ###########################################################
@@ -155,7 +155,7 @@ my_bubblePlot <- my_df2 %>%
                  fill = case_when(FDR_Significance == "significant" & LOG2FOLD>0 ~ "pos",
                                   FDR_Significance == "significant" & LOG2FOLD<0 ~ "neg",
                                   TRUE ~ "ns")),
-             size = 4, shape = 21, alpha = 0.8) + 
+             size = 3.5, shape = 21, alpha = 0.8) + 
   scale_fill_manual(
     values = c("pos" = "#bb0c00", 
                "neg" = "#00AFBB", 
